@@ -31,7 +31,7 @@
 /* Begin PBXFileReference section */
 		1A224C3CFF42312311CA2CB7 /* proximac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = proximac.c; sourceTree = SOURCE_ROOT; };
 		32A4FEC30562C75700D090E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		32A4FEC40562C75800D090E7 /* proximac.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = proximac.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		32A4FEC40562C75800D090E7 /* tcplognke.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tcplognke.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		843C27250687551E0063B7B0 /* tcplogger.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tcplogger.h; sourceTree = SOURCE_ROOT; };
 		844D13B20AE5351000D5756C /* Read Me.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "Read Me.rtf"; sourceTree = "<group>"; };
 		846E8E0A068755790031A743 /* tcplog.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tcplog.c; sourceTree = SOURCE_ROOT; };
@@ -43,7 +43,7 @@
 		C16F691E1B0336800030A265 /* js0n.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = js0n.h; sourceTree = "<group>"; };
 		C16F691F1B0336800030A265 /* local.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = local.c; sourceTree = SOURCE_ROOT; };
 		C16F69201B0336800030A265 /* local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = local.h; sourceTree = "<group>"; };
-		C16F69231B0336800030A265 /* socks5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socks5.h; path = ../src/socks5.h; sourceTree = SOURCE_ROOT; };
+		C16F69231B0336800030A265 /* socks5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socks5.h; sourceTree = SOURCE_ROOT; };
 		C16F69241B0336800030A265 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = SOURCE_ROOT; };
 		C16F69251B0336800030A265 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		C16F692B1B0338A50030A265 /* libuv.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libuv.1.dylib; path = /usr/local/lib/libuv.1.dylib; sourceTree = "<absolute>"; };
@@ -91,7 +91,7 @@
 		19C28FB6FE9D52B211CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				32A4FEC40562C75800D090E7 /* proximac.kext */,
+				32A4FEC40562C75800D090E7 /* tcplognke.kext */,
 				C16F69141B0336780030A265 /* proximac */,
 			);
 			name = Products;
@@ -165,7 +165,7 @@
 			name = KEXT;
 			productInstallPath = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 			productName = tcplognke;
-			productReference = 32A4FEC40562C75800D090E7 /* proximac.kext */;
+			productReference = 32A4FEC40562C75800D090E7 /* tcplognke.kext */;
 			productType = "com.apple.product-type.kernel-extension";
 		};
 		C16F69131B0336780030A265 /* proximac */ = {
@@ -197,7 +197,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 84870A7F08AC13EA00C1545C /* Build configuration list for PBXProject "proximac" */;
+			buildConfigurationList = 84870A7F08AC13EA00C1545C /* Build configuration list for PBXProject "tcplognke" */;
 			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -305,7 +305,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PREBINDING = NO;
-				PRODUCT_NAME = proximac;
+				PRODUCT_NAME = tcplognke;
 				SDKROOT = macosx10.9;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost";
@@ -347,7 +347,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PREBINDING = NO;
-				PRODUCT_NAME = proximac;
+				PRODUCT_NAME = tcplognke;
 				SDKROOT = macosx10.9;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost";
@@ -535,7 +535,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
 		};
-		84870A7F08AC13EA00C1545C /* Build configuration list for PBXProject "proximac" */ = {
+		84870A7F08AC13EA00C1545C /* Build configuration list for PBXProject "tcplognke" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				84870A8008AC13EA00C1545C /* Development */,

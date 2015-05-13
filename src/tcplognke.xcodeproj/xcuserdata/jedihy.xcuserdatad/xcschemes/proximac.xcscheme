@@ -17,7 +17,7 @@
                BlueprintIdentifier = "C16F69131B0336780030A265"
                BuildableName = "proximac"
                BlueprintName = "proximac"
-               ReferencedContainer = "container:proximac.xcodeproj">
+               ReferencedContainer = "container:tcplognke.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "C16F69131B0336780030A265"
             BuildableName = "proximac"
             BlueprintName = "proximac"
-            ReferencedContainer = "container:proximac.xcodeproj">
+            ReferencedContainer = "container:tcplognke.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -55,7 +55,7 @@
             BlueprintIdentifier = "C16F69131B0336780030A265"
             BuildableName = "proximac"
             BlueprintName = "proximac"
-            ReferencedContainer = "container:proximac.xcodeproj">
+            ReferencedContainer = "container:tcplognke.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -79,7 +79,7 @@
             BlueprintIdentifier = "C16F69131B0336780030A265"
             BuildableName = "proximac"
             BlueprintName = "proximac"
-            ReferencedContainer = "container:proximac.xcodeproj">
+            ReferencedContainer = "container:tcplognke.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

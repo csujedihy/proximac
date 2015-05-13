@@ -5,34 +5,34 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>E1CB5049-B4AE-4F26-A48D-E0F7F3768760</string>
+	<string>D681E3EA-64C4-469E-B9D6-9534416AEC4F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>proximac</string>
+	<string>tcplognke</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>82CB967D3E3E43072C67DC12CCFC7F63536DCB53</key>
-		<string>https://github.com/csujedihy/jedisocks.git</string>
+		<key>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</key>
+		<string>https://github.com/csujedihy/proximac</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>src/proximac.xcodeproj</string>
+	<string>src/tcplognke.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>82CB967D3E3E43072C67DC12CCFC7F63536DCB53</key>
+		<key>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/csujedihy/jedisocks.git</string>
+	<string>https://github.com/csujedihy/proximac</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>82CB967D3E3E43072C67DC12CCFC7F63536DCB53</string>
+	<string>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>82CB967D3E3E43072C67DC12CCFC7F63536DCB53</string>
+			<string>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</string>
 			<key>IDESourceControlWCCName</key>
 			<string>proximac</string>
 		</dict>

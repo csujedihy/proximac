@@ -22,13 +22,16 @@ NOTE: Proximac is based on libuv. So, before compile this project, make sure [li
 
 Then,
  
-	$ git clone https://github.com/csujedihy/jedisocks.git
+	$ git clone https://github.com/csujedihy/proximac.git
 	$ cd build
 	$ cmake ..
 	$ make
 
 ####Usage
-Modify the config file to set your proxy info and the name of process to be hooked
+1. Build both kext and user-space program (proximac).
+2. Modify the config file to set your proxy info and the name of process to be hooked (See more details below).
+3. Run the following commands.
+
 ```
   sudo chown -R root:wheel tcplognke.kext
   sudo kextload tcplognke.kext

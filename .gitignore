@@ -28,5 +28,9 @@
 *.x86_64
 *.hex
 
-# Debug files
-*.dSYM/
+#CTAGS files and Mac OSX trashes
+*.tags
+*.tag
+*.swp
+.DS_Store
+.tags_sorted_by_file

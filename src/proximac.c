@@ -2363,8 +2363,7 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
             }
             intval = *(int *)data;
             lck_mtx_lock(gmutex);
-            if (intval >= 0)
-                pid_to_hook = intval;
+            pid_to_hook = intval;
             lck_mtx_unlock(gmutex);
             break;
 		case TCPLOGGER_QMAX:

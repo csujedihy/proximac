@@ -25,6 +25,8 @@
 #define RC_OK 2
 #define MAX_RC_NUM 32
 
+int tell_kernel_to_hook();
+
 typedef struct {
     uv_write_t req;
     uv_buf_t buf;

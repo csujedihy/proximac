@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "32A4FEB80562C75700D090E7"
-               BuildableName = "proximac.kext"
+               BuildableName = "tcplognke.kext"
                BlueprintName = "KEXT"
                ReferencedContainer = "container:tcplognke.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "32A4FEB80562C75700D090E7"
-            BuildableName = "proximac.kext"
+            BuildableName = "tcplognke.kext"
             BlueprintName = "KEXT"
             ReferencedContainer = "container:tcplognke.xcodeproj">
          </BuildableReference>
@@ -61,7 +61,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "32A4FEB80562C75700D090E7"
-            BuildableName = "proximac.kext"
+            BuildableName = "tcplognke.kext"
             BlueprintName = "KEXT"
             ReferencedContainer = "container:tcplognke.xcodeproj">
          </BuildableReference>

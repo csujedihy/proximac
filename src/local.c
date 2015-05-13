@@ -310,7 +310,7 @@ int process_find() {
 int tell_kernel_to_hook() {
     struct ctl_info ctl_info;
     struct sockaddr_ctl sc;
-    
+    LOGI("tell kernel");
     gSocket = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
     if (gSocket < 0) {
         LOGE("socket SYSPROTO_CONTROL");
@@ -355,6 +355,32 @@ int tell_kernel_to_hook() {
 
     
     return 0;
+}
+
+void signal_handler(uv_signal_t *handle, int signum)
+{
+    LOGI("Ctrl+C pressed, tell kernel not to HOOK socket");
+    conf.pid = 999;
+#define HOOK_PID 8
+    if (setsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &conf.pid, sizeof(conf.pid)) == -1) {
+        LOGE("setsockopt failure HOOK_PID");
+        exit(EXIT_FAILURE);
+    }
+    
+    int pid_to_hook = 0;
+    int size = sizeof(pid_to_hook);
+    if (getsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &pid_to_hook, &size) == -1) {
+        LOGE("getsockopt HOOK_PID failure");
+        exit(EXIT_FAILURE);
+    }
+    if (pid_to_hook == conf.pid)
+        LOGI("Unhook Succeed! Now back to bypass mode", pid_to_hook);
+    
+#undef HOOK_PID
+    uv_loop_t* loop = handle->data;
+    uv_signal_stop(handle);
+    uv_stop(loop);
+    exit(0);
 }
 
 int main(int argc, char **argv) {
@@ -414,7 +440,8 @@ int main(int argc, char **argv) {
     
     struct sockaddr_in bind_addr;
     //    system("ps -e|grep Chrome|head -1");
-    loop = uv_default_loop();
+    loop = malloc(sizeof *loop);
+    uv_loop_init(loop);
     listener_t *listener      = calloc(1, sizeof(server_ctx_t));
     listener->handle.data     = listener;
     uv_tcp_init(loop, &listener->handle);
@@ -425,12 +452,21 @@ int main(int argc, char **argv) {
         LOGE("address error");
     r = uv_tcp_bind(&listener->handle, (struct sockaddr*)&bind_addr, 0);
     if (r)
-        LOGE("bind error");
+        LOGI("bind error");
     r = uv_listen((uv_stream_t*) &listener->handle, 128 /*backlog*/, server_accept_cb);
     if (r)
-        LOGE("listen error port");
+        LOGI("listen error port");
     LOGI("Listening on %s:%d", conf.proximac_listen_address, conf.proximac_port);
+
+    signal(SIGPIPE, SIG_IGN);
+    uv_signal_t sigint;
+    sigint.data = loop;
+    int n = uv_signal_init(loop, &sigint);
+    n = uv_signal_start(&sigint, signal_handler, SIGINT);
+    
     uv_run(loop, UV_RUN_DEFAULT);
+    uv_loop_close(loop);
+    free(loop);
     CLOSE_LOGFILE;
     return 0;
 }

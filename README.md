@@ -3,12 +3,13 @@
 
 ####Overview
 
-Proximac is an open-source alternative to Proxifier. With Proximac, users can force App to use SOCKS5 proxy. The current version can only work for a single App. I hope more developers can join this project.
+Proximac is an open-source alternative to Proxifier. With Proximac, users can force App to use SOCKS5 proxy. I hope more developers can join this project.
+
+**New feature**:
+
+Now support forcing multiple Apps to use SOCKS5 proxy.
 
 Note: Proximac only works on Mac OSX.
-
-This project is still **under development**.
-
 
 
 ####How to build:
@@ -42,14 +43,13 @@ We use almost the same config file as shadowsocks do but add new arguments.
 
 ```
 {
-    "process_name":"Unibox", 
+    "process_name":
+    ["Unibox", "Chrome Canary", "Thunder"], 
     "local_port":1080,
     "local_address":"127.0.0.1",
     "proximac_listen_address":"127.0.0.1",
     "proximac_port":8558
 }
-
-
 ```
 Note: 
 

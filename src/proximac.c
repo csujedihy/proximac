@@ -1248,7 +1248,7 @@ tl_notify_fn(void *cookie, socket_t so, sflt_event_t event, void *param)
                 lck_mtx_lock(gmutex_pid);
                 struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
                 lck_mtx_unlock(gmutex_pid);
-                printf("[proximac]: after RB_FIND pid = %d\n", find_pid.pid);
+                printf("[proximac]: after RB_FIND pid = %d\n", find_pid.pid, pid_num);
                 if (exist != NULL) {
                     printf("[proximac]: do hook operations to pid = %d\n", find_pid.pid);
                     mbuf_t proximac_hdr_data = NULL;

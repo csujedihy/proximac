@@ -522,11 +522,14 @@ int main(int argc, char **argv) {
     LOGI("Listening on %s:%d", conf.proximac_listen_address, conf.proximac_port);
 
     signal(SIGPIPE, SIG_IGN);
-    uv_signal_t sigint,sigstp;
+    uv_signal_t sigint,sigstp,sigkil;
+    sigkil.data = loop;
     sigint.data = loop;
     sigstp.data = loop;
     int n = uv_signal_init(loop, &sigint);
     n = uv_signal_init(loop, &sigstp);
+    n = uv_signal_init(loop, &sigkil);
+    n = uv_signal_start(&sigint, signal_handler_ctl_z, SIGKILL);
     n = uv_signal_start(&sigint, signal_handler_ctl_c, SIGINT);
     n = uv_signal_start(&sigstp, signal_handler_ctl_z, SIGTSTP);
     

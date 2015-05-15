@@ -52,6 +52,13 @@ Then,
   sudo kextload tcplognke.kext
   sudo ./proximac -c config.conf
 ```
+Detailed usage of proximac:
+
+```
+  proximac
+    -c <config_file> Path of configuration file that is written in JSON
+    -d daemon mode
+```
 ####Example of configuration file
 We use almost the same config file as shadowsocks do but add new arguments.
 

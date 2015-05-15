@@ -444,6 +444,7 @@ void signal_handler_ctl_c(uv_signal_t *handle, int signum)
     exit(0);
 }
 
+
 int main(int argc, char **argv) {
     int c, option_index = 0, daemon = 0;
     char* configfile = NULL;
@@ -486,12 +487,12 @@ int main(int argc, char **argv) {
         read_conf(configfile, &conf);
     }
     
-    int r = process_find();
-    if (r)
-        FATAL("unable to find process PID");
+//    int r = process_find();
+//    if (r)
+//        FATAL("unable to find process PID");
 
 //    exit(0);
-    r = tell_kernel_to_hook();
+    int r = tell_kernel_to_hook();
     if (r)
         FATAL("kernel cannot hook this PID due to various reasons");
     

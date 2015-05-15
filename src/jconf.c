@@ -51,13 +51,14 @@ if (val != NULL)
         LOGI("Process List:");
         while ((buf = js0n(NULL, index, val, (int)pos, &vlen))!= NULL) {
             index++;
+#define MAX_PROC_NAME_LEN 16
             struct pid *pid_to_insert = malloc(sizeof(struct pid));
-            pid_to_insert->name = malloc(vlen + 1);
+            pid_to_insert->name = calloc(1, vlen + 1);
             memcpy(pid_to_insert->name, buf, vlen);
             pid_to_insert->name[vlen] = '\0';
-            pid_to_insert->pid = index;
+            pid_to_insert->pid = hash(pid_to_insert->name);
             RB_INSERT(pid_tree, &pid_list, pid_to_insert);
-            LOGI("%d. %s", index, pid_to_insert->name);
+            LOGI("%d. %s hash %x", index, pid_to_insert->name, pid_to_insert->pid);
         }
         
         conf->total_process_num = index;

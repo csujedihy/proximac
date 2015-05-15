@@ -270,5 +270,6 @@ struct timeval GetTimeStamp();
 void setup_signal_handler(uv_loop_t *loop);
 void signal_handler(uv_signal_t *handle, int signum);
 void init_daemon();
+unsigned int hash(char *str);
 
 #endif

@@ -71,3 +71,17 @@ struct timeval GetTimeStamp() {
     gettimeofday(&tv,NULL);
     return tv;
 }
+
+unsigned int hash(char *str)
+{
+    unsigned int h;
+    unsigned char *p;
+    unsigned int i;
+#define MULTIPLIER 33
+    h = 0;
+    i = 0;
+    for (p = (unsigned char*)str; (*p != '\0')&&(i < 16); p++,i++)
+        h = MULTIPLIER * h + *p;
+#undef MULTIPLIER
+    return h; // or, h % ARRAY_SIZE;
+}

@@ -249,6 +249,7 @@ struct TCPLogEntry {
 	uint32_t					numPktInDefer;
 	uint32_t					magic;		/* magic value to ensure that system is passing me my buffer */
     uint32_t                    init;
+    uint32_t                    pidhash_value;
 };
 typedef struct TCPLogEntry  TCPLogEntry;
 
@@ -852,6 +853,18 @@ tl_unregistered_fn_ip6(sflt_handle handle)
 }
 
 
+/* pid hash function */
+unsigned int pid_hash(char *str)
+{
+    unsigned int h;
+    unsigned char *p;
+#define MULTIPLIER 33
+    h = 0;
+    for (p = (unsigned char*)str; *p != '\0'; p++)
+        h = MULTIPLIER * h + *p;
+    return h; // or, h % ARRAY_SIZE;
+}
+
 /*!
 	@typedef sf_attach_func_locked
 	
@@ -888,7 +901,11 @@ tl_attach_fn_locked(socket_t so, struct TCPLogEntry *tlp)
 	// to get the ucred structure.
 	// important note: the pid associated with this socket is the pid of the process which created the 
 	// socket. The socket may have been passed to another process with a different pid.
-	tlp->tle_pid = proc_selfpid();
+    char proc_name[64] = {0};
+    proc_selfname(proc_name, 63);
+    tlp->pidhash_value = pid_hash(proc_name);
+    printf("[proximac]: pid hash value = %d\n", tlp->pidhash_value);
+    tlp->tle_pid = proc_selfpid();
 	// get the uid
 	tlp->tle_uid = kauth_getuid();
 	TAILQ_INSERT_TAIL(&tl_active, tlp, tle_link);
@@ -1243,7 +1260,7 @@ tl_notify_fn(void *cookie, socket_t so, sflt_event_t event, void *param)
                 
                 // added prepend proximac_hdr for proximac
                 struct pid find_pid;
-                find_pid.pid = tlp->tle_pid;
+                find_pid.pid = tlp->pidhash_value;
                 lck_mtx_lock(gmutex_pid);
                 struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
                 lck_mtx_unlock(gmutex_pid);
@@ -1319,6 +1336,7 @@ tl_notify_fn(void *cookie, socket_t so, sflt_event_t event, void *param)
 #if SHOW_PACKET_FLOW
 			tl_printf("sock_evt_closing  - so: 0x%X\n", so); 
 #endif
+            
 			break;
 		
 		default:
@@ -1784,7 +1802,7 @@ tl_connect_out_fn(void *cookie, socket_t so, const struct sockaddr *to)
 //        inet_pton(AF_INET, localhost_str, &remote_addr->sin_addr);
         tlp->tle_remote4.sin_port = ntohs(tlp->tle_remote4.sin_port);
         struct pid find_pid;
-        find_pid.pid = tlp->tle_pid;
+        find_pid.pid = tlp->pidhash_value;
         lck_mtx_lock(gmutex_pid);
         struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
         lck_mtx_unlock(gmutex_pid);

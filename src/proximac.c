@@ -131,6 +131,7 @@ demonstrates communication with an application process using a SYSTEM_CONTROL so
 #include <kern/locks.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
+#include <libkern/tree.h>
 
 #include "tcplogger.h"
 #include <libkern/OSMalloc.h>
@@ -141,7 +142,7 @@ demonstrates communication with an application process using a SYSTEM_CONTROL so
 #include <stdarg.h>
 
 static int pid_to_hook = 0;
-
+static int pid_num = 0;
 
 #if !defined(SWALLOW_PACKETS)
 #define SWALLOW_PACKETS		0 	// set this define to 1 to demonstrate all packet swallowing/re-injection
@@ -187,6 +188,37 @@ static boolean_t	gKernCtlRegistered = FALSE;
 #if SWALLOW_PACKETS
 static DATATIMERSTATES		gTimerState = TIMER_INACTIVE;	// used to prevent too many (extraneous) calls to bsd_timeout
 #endif  // SWALLOW_PACKETS
+
+
+/* List of pid to free added for proximac */
+SLIST_HEAD(pid_list, pid);
+static struct pid_list pid_freelist;
+
+/* Red-black tree of pid to be Hooked for proximac */
+struct pid {
+    RB_ENTRY(pid) rb_link;
+    int pid;
+    int value;
+    SLIST_ENTRY(pid) slist_link;
+};
+
+RB_HEAD(pid_tree, pid);
+
+static struct pid_tree pid_list;
+
+static inline int
+pid_cmp(const struct pid *tree_a, const struct pid *tree_b)
+{
+    if (tree_a->pid == tree_b->pid)
+        return 0;
+    return tree_a->pid < tree_b->pid? -1:1;
+}
+
+RB_PROTOTYPE(pid_tree, pid, rb_link, pid_cmp);
+RB_GENERATE(pid_tree, pid, rb_link, pid_cmp);
+
+static lck_mtx_t		*gmutex_pid = NULL; // used to protect pid_list and pid_freelist
+
 
 /* List of active 'Logging' sockets */
 static struct tl_list tl_active;				// protected by gmutex
@@ -305,16 +337,16 @@ static void tl_flush_backlog(boolean_t all);
 static void
 tl_printf(const char *fmt, ...)
 {
-#if DEBUG
-	va_list listp;
-	char log_buffer[92];
-
-	va_start(listp, fmt);
-
-	vsnprintf(log_buffer, sizeof(log_buffer), fmt, listp);
-	printf("%s", log_buffer);
-
-	va_end(listp);
+#if DEBUGX
+//	va_list listp;
+//	char log_buffer[92];
+//
+//	va_start(listp, fmt);
+//
+//	vsnprintf(log_buffer, sizeof(log_buffer), fmt, listp);
+//	printf("%s", log_buffer);
+//
+//	va_end(listp);
 #endif
 }
 
@@ -373,6 +405,15 @@ static errno_t alloc_locks(void)
 			tl_printf("error calling lck_mtx_alloc_init\n");
 			result = ENOMEM;
 		}
+        
+        // added lock alloc for proximac
+        gmutex_pid = lck_mtx_alloc_init(gmutex_grp, LCK_ATTR_NULL);
+        if (gmutex_pid == NULL)
+        {
+            tl_printf("error calling lck_mtx_alloc_init\n");
+            result = ENOMEM;
+        }
+        
 #if SWALLOW_PACKETS
 		if (result == 0)
 		{
@@ -397,6 +438,14 @@ static void free_locks(void)
 		lck_mtx_free(gmutex, gmutex_grp);
 		gmutex = NULL;
 	}
+    
+    // added lock free for proximac
+    if (gmutex_pid)
+    {
+        lck_mtx_free(gmutex_pid, gmutex_grp);
+        gmutex_pid = NULL;
+    }
+    
 #if SWALLOW_PACKETS
 	if (g_swallowQ_mutex)
 	{
@@ -1193,8 +1242,15 @@ tl_notify_fn(void *cookie, socket_t so, sflt_event_t event, void *param)
 				tl_printf("Remote Addr: %s:%d\n", addrString, port);
 //#endif
                 
-                // prepend proximac_hdr
-                if (tlp->tle_pid == pid_to_hook) {
+                // added prepend proximac_hdr for proximac
+                struct pid find_pid;
+                find_pid.pid = tlp->tle_pid;
+                lck_mtx_lock(gmutex_pid);
+                struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
+                lck_mtx_unlock(gmutex_pid);
+                printf("[proximac]: after RB_FIND pid = %d\n", find_pid.pid);
+                if (exist != NULL) {
+                    printf("[proximac]: do hook operations to pid = %d\n", find_pid.pid);
                     mbuf_t proximac_hdr_data = NULL;
                     mbuf_t proximac_hdr_control = NULL;
                     errno_t retval;
@@ -1208,7 +1264,7 @@ tl_notify_fn(void *cookie, socket_t so, sflt_event_t event, void *param)
                     memcpy(proximac_hdr + 1, addrString, addrlen);
                     memcpy(proximac_hdr + 1 + addrlen, &port, sizeof(port));
                     
-                    // Allocate a mbuf chain for authentication data in blocking mode.
+                    // Allocate a mbuf chain for adding proximac header.
                     // Note: default type and flags are fine; don't do further modification.
                     retval = mbuf_allocpacket(MBUF_WAITOK, hdr_len, 0, &proximac_hdr_data);
                     retval = mbuf_copyback(proximac_hdr_data, 0, hdr_len, proximac_hdr, MBUF_WAITOK);
@@ -1518,34 +1574,6 @@ tl_data_out_fn(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *dat
 		If we reach this point, then we have not previously seen this packet. 
 		First lets get some statistics from the packet.
 	*/
-    
-    printf("mbuf-----tle_pid = %d ---- pid_to_hook %d ---\n", tlp->tle_pid, pid_to_hook);
-//    if (tlp->tle_pid == pid_to_hook) {
-//        if (!tlp->init) {
-//            unsigned char	addrString[256] = {0};
-//            void			*remoteAddr;
-//            uint16_t port;
-//            if (tlp->tle_protocol == AF_INET)
-//            {
-//                remoteAddr = &(tlp->tle_remote4.sin_addr);
-//                port = tlp->tle_remote4.sin_port;
-//            } else
-//            {
-//                remoteAddr = &(tlp->tle_remote6.sin6_addr);
-//                port = tlp->tle_remote6.sin6_port;
-//            }
-//            inet_ntop(tlp->tle_protocol, remoteAddr, (char*)addrString, sizeof(addrString));
-//            char addrlen = strlen(addrString);
-//            mbuf_prepend(data, sizeof(addrlen) + addrlen + sizeof(port), MBUF_WAITOK);
-//            mbuf_copyback(*data, 0, sizeof(addrlen), &addrlen, MBUF_WAITOK);
-//            mbuf_copyback(*data, sizeof(addrlen), addrlen, addrString, MBUF_WAITOK);
-//            mbuf_copyback(*data, sizeof(addrlen) + addrlen, sizeof(port), &port, MBUF_WAITOK);
-//            printf("mbuf-----tle_pid = %d ---- pid_to_hook %d ---\n", tlp->tle_pid, pid_to_hook);
-//            printf("address %s port %d init %d\n", addrString, port, tlp->init);
-//            tlp->init = 1;
-//            
-//        }
-//    }
 
 #if !SWALLOW_PACKETS
 #if SHOW_PACKET_FLOW
@@ -1756,7 +1784,14 @@ tl_connect_out_fn(void *cookie, socket_t so, const struct sockaddr *to)
 //        char* localhost_str = "127.0.0.1";
 //        inet_pton(AF_INET, localhost_str, &remote_addr->sin_addr);
         tlp->tle_remote4.sin_port = ntohs(tlp->tle_remote4.sin_port);
-        if (tlp->tle_pid == pid_to_hook) {
+        struct pid find_pid;
+        find_pid.pid = tlp->tle_pid;
+        lck_mtx_lock(gmutex_pid);
+        struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
+        lck_mtx_unlock(gmutex_pid);
+        printf("[proximac]: after RB_FIND pid = %d pid_num \n", find_pid.pid, pid_num);
+        if (exist != NULL) {
+            printf("[proximac]: connect_out_fn found exist PID\n");
             remote_addr->sin_port = htons(8558);
             remote_addr->sin_addr.s_addr = 0x100007f;
         }
@@ -2216,10 +2251,36 @@ static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **un
 	struct tl_cb *tl_cb;
 	errno_t error = 0;
 	
-	tl_printf("ctl_connect - unit is %d\n", sac->sc_unit);
-
+    printf("[proximac]: connected by proximac client %d pid_num %d\n", sac->sc_unit, pid_num);
 	error = add_ctl_unit(ctl_ref, sac->sc_unit, &tl_cb);
-	if (error == 0) 
+    
+    
+    // added pid list clear for proximac
+    if (pid_num != 0) {
+        
+        lck_mtx_lock(gmutex_pid);
+        
+        struct pid *pid_tmp;
+        RB_FOREACH(pid_tmp, pid_tree, &pid_list) {
+            SLIST_INSERT_HEAD(&pid_freelist, pid_tmp, slist_link);
+        }
+        
+        while (!SLIST_EMPTY(&pid_freelist)) {
+            pid_tmp = SLIST_FIRST(&pid_freelist);
+            SLIST_REMOVE_HEAD(&pid_freelist, slist_link);
+            RB_REMOVE(pid_tree, &pid_list, pid_tmp);
+            if (pid_tmp)
+                OSFree(pid_tmp, sizeof(struct pid), gOSMallocTag);
+            pid_num--;
+        }
+
+        lck_mtx_unlock(gmutex_pid);
+        if (pid_num == 0)
+            printf("[proximac]: pid list clear\n");
+        
+    }
+    
+	if (error == 0)
 	{
 		
 		*unitinfo = tl_cb;		// store the connection info to be passed to the ctl_disconnect function 
@@ -2293,10 +2354,22 @@ static int ctl_get(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
 	tl_printf("ctl_get - opt is %d\n", opt);
         
 	switch (opt) {
+        case PIDLIST_STATUS:
+            valsize = min(sizeof(int), *len);
+            printf("[proximac]: pid number = %d\n", pid_num);
+            buf = &pid_num;
+            break;
         case HOOK_PID:
             valsize = min(sizeof(int), *len);
-            printf("pid_to_hook = %d\n", pid_to_hook);
-            buf = &pid_to_hook;
+            lck_mtx_lock(gmutex_pid);
+            struct pid *pid_tmp = NULL;
+            int pidget_checksum = 0;
+            RB_FOREACH(pid_tmp, pid_tree, &pid_list) {
+                pidget_checksum += pid_tmp->pid;
+            }
+            lck_mtx_unlock(gmutex_pid);
+            buf = &pidget_checksum;
+            printf("[proximac]: pidget_checksum = %d\n", pidget_checksum);
             break;
 		case TCPLOGGER_STATS:
 			valsize = min(sizeof(tl_stats), *len);
@@ -2362,9 +2435,13 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
                 break;
             }
             intval = *(int *)data;
-            lck_mtx_lock(gmutex);
-            pid_to_hook = intval;
-            lck_mtx_unlock(gmutex);
+            lck_mtx_lock(gmutex_pid);
+            struct pid *pid_to_insert = OSMalloc(sizeof(struct pid), gOSMallocTag);
+            pid_to_insert->pid = intval;
+            RB_INSERT(pid_tree, &pid_list, pid_to_insert);
+            printf("[proximac]: set pid %d to be hooked\n", pid_to_insert->pid);
+            pid_num++;
+            lck_mtx_unlock(gmutex_pid);
             break;
 		case TCPLOGGER_QMAX:
 			if (len < sizeof(int)) {
@@ -2544,6 +2621,11 @@ com_apple_dts_kext_tcplognke_start(kmod_info_t *ki, void *data)
 	tl_stats.tls_enabled = 1;
 	
 	// initialize the queues which we are going to use.
+    
+    // initialize pid freelist and pidlist for proximac
+    SLIST_INIT(&pid_freelist);
+    RB_INIT(&pid_list);
+
 	TAILQ_INIT(&tl_active);
 	TAILQ_INIT(&tl_done);
 	TAILQ_INIT(&tl_cb_list);		// will hold list of connections
@@ -2722,7 +2804,7 @@ com_apple_dts_kext_tcplognke_stop(kmod_info_t *ki, void *data)
 		else
 		{
 			tl_printf( "tcplognke_stop: again\n");
-			retval = KERN_FAILURE;	// return failure since we've not completed the unreg process yet
+			retval = EBUSY;	// return failure since we've not completed the unreg process yet
 		}
 	}
 	

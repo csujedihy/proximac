@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		32A4FEBE0562C75700D090E7 /* proximac.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3CFF42312311CA2CB7 /* proximac.c */; settings = {ATTRIBUTES = (); }; };
 		843C27260687551E0063B7B0 /* tcplogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 843C27250687551E0063B7B0 /* tcplogger.h */; };
+		C1556F6B1B0595300014A309 /* tree.c in Sources */ = {isa = PBXBuildFile; fileRef = C1556F6A1B0595300014A309 /* tree.c */; };
 		C16F69261B0336800030A265 /* jconf.c in Sources */ = {isa = PBXBuildFile; fileRef = C16F691B1B0336800030A265 /* jconf.c */; };
 		C16F69271B0336800030A265 /* js0n.c in Sources */ = {isa = PBXBuildFile; fileRef = C16F691D1B0336800030A265 /* js0n.c */; };
 		C16F69281B0336800030A265 /* local.c in Sources */ = {isa = PBXBuildFile; fileRef = C16F691F1B0336800030A265 /* local.c */; };
@@ -35,6 +36,8 @@
 		843C27250687551E0063B7B0 /* tcplogger.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tcplogger.h; sourceTree = SOURCE_ROOT; };
 		844D13B20AE5351000D5756C /* Read Me.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "Read Me.rtf"; sourceTree = "<group>"; };
 		846E8E0A068755790031A743 /* tcplog.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tcplog.c; sourceTree = SOURCE_ROOT; };
+		C1556F691B047D6D0014A309 /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = SOURCE_ROOT; };
+		C1556F6A1B0595300014A309 /* tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tree.c; sourceTree = SOURCE_ROOT; };
 		C16F69141B0336780030A265 /* proximac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = proximac; sourceTree = BUILT_PRODUCTS_DIR; };
 		C16F69161B0336780030A265 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		C16F691B1B0336800030A265 /* jconf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jconf.c; sourceTree = SOURCE_ROOT; };
@@ -120,6 +123,7 @@
 		C16F69211B0336800030A265 /* proximac */ = {
 			isa = PBXGroup;
 			children = (
+				C1556F691B047D6D0014A309 /* tree.h */,
 				C16F69231B0336800030A265 /* socks5.h */,
 				C16F69241B0336800030A265 /* utils.c */,
 				C16F69251B0336800030A265 /* utils.h */,
@@ -129,6 +133,7 @@
 				C16F691E1B0336800030A265 /* js0n.h */,
 				C16F691F1B0336800030A265 /* local.c */,
 				C16F69201B0336800030A265 /* local.h */,
+				C1556F6A1B0595300014A309 /* tree.c */,
 			);
 			path = proximac;
 			sourceTree = "<group>";
@@ -259,6 +264,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1556F6B1B0595300014A309 /* tree.c in Sources */,
 				C16F69261B0336800030A265 /* jconf.c in Sources */,
 				C16F692A1B0336800030A265 /* utils.c in Sources */,
 				C16F69271B0336800030A265 /* js0n.c in Sources */,

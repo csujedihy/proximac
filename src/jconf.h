@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <strings.h>
+#include "tree.h"
 
 typedef struct {
     uint16_t localport;
@@ -21,6 +22,7 @@ typedef struct {
     char* process_name;
     uint16_t proximac_port;
     int pid;
+    int total_process_num;
 } conf_t;
 
 extern void read_conf(char* configfile, conf_t* conf);

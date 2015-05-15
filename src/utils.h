@@ -178,10 +178,8 @@ while (0)
 
 #define SHOW_BUFFER(buf, len)   \
 do {                            \
-    for (int i=0; i<len; i++)  \
-        printf("%x ", buf[i]);  \
-for (int i = 0; i<len;i++)  \
-  putchar(buf[i]);      \
+    for (int i = 0; i<len;i++)  \
+        putchar(buf[i]);        \
 } while (0)
 
 #define LOG_SHOW_BUFFER(buf, len)               \

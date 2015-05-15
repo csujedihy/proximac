@@ -25,6 +25,18 @@
 #define RC_OK 2
 #define MAX_RC_NUM 32
 
+#include "tree.h"
+
+struct pid {
+    RB_ENTRY(pid) rb_link;
+    int pid;
+    char* name;
+};
+
+RB_HEAD(pid_tree, pid);
+RB_PROTOTYPE(pid_tree, pid, rb_link, pid_cmp);
+extern struct pid_tree pid_list;
+
 int tell_kernel_to_hook();
 
 typedef struct {

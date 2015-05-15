@@ -6,10 +6,11 @@
 //  Copyright (c) 2015年 jedihy. All rights reserved.
 //
 
-
+#include "tree.h"
 #include "js0n.h"
 #include "utils.h"
 #include "jconf.h"
+#include "local.h"
 
 void read_conf(char* configfile, conf_t* conf) {
     char* val = NULL;
@@ -45,10 +46,24 @@ val = js0n(str, strlen(str), configbuf, (int)pos, &vlen); \
 if (val != NULL)
 
     JSONPARSE("process_name") {
-        conf->process_name = (char*) malloc(vlen + 1);
-        memcpy(conf->process_name, val, vlen);
-        conf->process_name[vlen] = '\0';
+        int index = 0;
+        char* buf;
+        LOGI("Process List:");
+        while ((buf = js0n(NULL, index, val, (int)pos, &vlen))!= NULL) {
+            index++;
+            struct pid *pid_to_insert = malloc(sizeof(struct pid));
+            pid_to_insert->name = malloc(vlen + 1);
+            memcpy(pid_to_insert->name, buf, vlen);
+            pid_to_insert->name[vlen] = '\0';
+            pid_to_insert->pid = index;
+            RB_INSERT(pid_tree, &pid_list, pid_to_insert);
+            LOGI("%d. %s", index, pid_to_insert->name);
+        }
+        
+        conf->total_process_num = index;
+        
     }
+    
     
     JSONPARSE("proximac_listen_address") {
         conf->proximac_listen_address = (char*) malloc(vlen + 1);

@@ -118,5 +118,6 @@ struct tl_stats {
 #define TCPLOGGER_DELUNIT 6
 #define TCPLOGGER_LOG 7
 #define HOOK_PID 8
+#define PIDLIST_STATUS 9
 
 #endif

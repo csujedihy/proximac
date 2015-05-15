@@ -26,13 +26,13 @@
 #include "local.h"
 #include "utils.h"
 #include "socks5.h"
-#include "tcplogger.h"
 
 conf_t conf;
 FILE * logfile    = NULL;
 uv_loop_t *loop = NULL;
 int log_to_file = 1;
 int gSocket = -1;
+int gSocket_for_release = -1;
 
 
 // callback functions
@@ -48,6 +48,21 @@ static void remote_after_close_cb(uv_handle_t* handle);
 static void connect_to_remote_cb(uv_connect_t* req, int status);
 static void final_after_close_cb(uv_handle_t* handle);
 
+// pid rb-tree structure
+/* Red-black tree of pid to be Hooked for proximac */
+
+
+struct pid_tree pid_list;
+
+static inline int
+pid_cmp(const struct pid *tree_a, const struct pid *tree_b)
+{
+    if (tree_a->pid == tree_b->pid)
+        return 0;
+    return tree_a->pid < tree_b->pid? -1:1;
+}
+
+RB_GENERATE(pid_tree, pid, rb_link, pid_cmp);
 static void final_after_close_cb(uv_handle_t* handle) {
     LOGW("final_after_close_cb");
     server_ctx_t* server_ctx = handle->data;
@@ -281,36 +296,79 @@ static void server_read_cb(uv_stream_t *stream, ssize_t nread, const uv_buf_t *b
 int process_find() {
     FILE *fstream = NULL;
     char buff[1024];
-    int process_name_len = strlen(conf.process_name);
-    memset(buff,0,sizeof(buff));
-    char* template_str = "ps -e|grep \"\"|head -1|awk \'{if($4==\"ps\")print -1;else print $1}\'";
-    int template_len = strlen(template_str);
-    char* command = calloc(1, process_name_len + template_len + 1);
-    sprintf(command, "ps -e|grep \"%s\"|head -1|awk \'{if($6==\"ps\")print -1;else print $1}\'", conf.process_name);
-    if(NULL == (fstream = popen(command, "r"))) {
-        fprintf(stderr, "execute command failed: %s", strerror(errno));
-        return -1;
-    }
     
-    if(NULL != fgets(buff, sizeof(buff), fstream)) {
-        conf.pid = atoi(buff);
-        if (conf.pid == -1)
-            FATAL("process not found");
-    }
-    else {
-        FATAL("shell command execute failed");
-    }
+    struct pid *pid_tmp = NULL;
+    RB_FOREACH(pid_tmp, pid_tree, &pid_list) {
+        int process_name_len = strlen(pid_tmp->name);
+        memset(buff,0,sizeof(buff));
+        char* template_str = "ps -e|grep \"\"|head -1|awk \'{if($4==\"ps\")print -1;else print $1}\'";
+        int template_len = strlen(template_str);
+        char* command = calloc(1, process_name_len + template_len + 1);
+        sprintf(command, "ps -e|grep \"%s\"|head -1|awk \'{if($6==\"ps\")print -1;else print $1}\'", pid_tmp->name);
+        if(NULL == (fstream = popen(command, "r"))) {
+            fprintf(stderr, "execute command failed: %s", strerror(errno));
+            return -1;
+        }
+        
+        if(NULL != fgets(buff, sizeof(buff), fstream)) {
+            pid_tmp->pid = atoi(buff);
+            if (pid_tmp->pid == -1)
+                FATAL("process not found");
+        }
+        else {
+            FATAL("shell command execute failed");
+        }
+        
+        LOGI("process to be hooked %s PID = %d", pid_tmp->name, pid_tmp->pid);
+        
+        pclose(fstream);
     
-    LOGI("process to be hooked %s PID = %d", conf.process_name, conf.pid);
-    
-    pclose(fstream);
+    }
+
     return 0;
+}
+
+int tell_kernel_to_unhook() {
+    struct ctl_info ctl_info;
+    struct sockaddr_ctl sc;
+    LOGI("tell kernel");
+    
+    gSocket_for_release = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
+    if (gSocket_for_release < 0) {
+        LOGE("socket SYSPROTO_CONTROL");
+        exit(EXIT_FAILURE);
+    }
+    
+    bzero(&ctl_info, sizeof(struct ctl_info));
+#define MYBUNDLEID		"com.apple.dts.kext.tcplognke"
+    
+    strcpy(ctl_info.ctl_name, MYBUNDLEID);
+    if (ioctl(gSocket_for_release, CTLIOCGINFO, &ctl_info) == -1) {
+        LOGE("ioctl CTLIOCGINFO");
+        exit(EXIT_FAILURE);
+    }
+    
+    bzero(&sc, sizeof(struct sockaddr_ctl));
+    sc.sc_len = sizeof(struct sockaddr_ctl);
+    sc.sc_family = AF_SYSTEM;
+    sc.ss_sysaddr = SYSPROTO_CONTROL;
+    sc.sc_id = ctl_info.ctl_id;
+    sc.sc_unit = 0;
+    
+    
+    if (connect(gSocket_for_release, (struct sockaddr *)&sc, sizeof(struct sockaddr_ctl))) {
+        LOGE("connect");
+        exit(EXIT_FAILURE);
+    }
+    return 0;
+
 }
 
 int tell_kernel_to_hook() {
     struct ctl_info ctl_info;
     struct sockaddr_ctl sc;
     LOGI("tell kernel");
+    
     gSocket = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
     if (gSocket < 0) {
         LOGE("socket SYSPROTO_CONTROL");
@@ -318,6 +376,8 @@ int tell_kernel_to_hook() {
     }
     
     bzero(&ctl_info, sizeof(struct ctl_info));
+#define MYBUNDLEID		"com.apple.dts.kext.tcplognke"
+
     strcpy(ctl_info.ctl_name, MYBUNDLEID);
     if (ioctl(gSocket, CTLIOCGINFO, &ctl_info) == -1) {
         LOGE("ioctl CTLIOCGINFO");
@@ -331,52 +391,53 @@ int tell_kernel_to_hook() {
     sc.sc_id = ctl_info.ctl_id;
     sc.sc_unit = 0;
     
+    
     if (connect(gSocket, (struct sockaddr *)&sc, sizeof(struct sockaddr_ctl))) {
         LOGE("connect");
         exit(EXIT_FAILURE);
     }
     
 #define HOOK_PID 8
-    if (setsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &conf.pid, sizeof(conf.pid)) == -1) {
-        LOGE("setsockopt failure HOOK_PID");
-        exit(EXIT_FAILURE);
+    struct pid *pid_tmp = NULL;
+    int pidset_checksum = 0;
+    RB_FOREACH(pid_tmp, pid_tree, &pid_list) {
+            if (setsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &pid_tmp->pid, sizeof(pid_tmp->pid)) == -1) {
+                LOGE("setsockopt failure HOOK_PID");
+                exit(EXIT_FAILURE);
+            }
+        pidset_checksum += pid_tmp->pid;
     }
     
-    int pid_to_hook = 0;
-    int size = sizeof(pid_to_hook);
-    if (getsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &pid_to_hook, &size) == -1) {
+    int pidget_checksum = 0;
+    int size = sizeof(pidget_checksum);
+    if (getsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &pidget_checksum, &size) == -1) {
         LOGE("getsockopt HOOK_PID failure");
         exit(EXIT_FAILURE);
     }
-    if (pid_to_hook == conf.pid)
-        LOGI("Hook Succeed! TCP connections created by PID %d are now redirected", pid_to_hook);
-    
+    if (pidget_checksum == pidset_checksum)
+        LOGI("Hook Succeed!");
+    else
+        LOGI("Hook Fail!");
 #undef HOOK_PID
 
     
     return 0;
 }
 
-void signal_handler(uv_signal_t *handle, int signum)
+void signal_handler_ctl_z(uv_signal_t *handle, int signum)
 {
-    LOGI("Ctrl+C pressed, tell kernel not to HOOK socket");
-    conf.pid = 999;
-#define HOOK_PID 8
-    if (setsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &conf.pid, sizeof(conf.pid)) == -1) {
-        LOGE("setsockopt failure HOOK_PID");
-        exit(EXIT_FAILURE);
-    }
-    
-    int pid_to_hook = 0;
-    int size = sizeof(pid_to_hook);
-    if (getsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &pid_to_hook, &size) == -1) {
-        LOGE("getsockopt HOOK_PID failure");
-        exit(EXIT_FAILURE);
-    }
-    if (pid_to_hook == conf.pid)
-        LOGI("Unhook Succeed! Now back to bypass mode", pid_to_hook);
-    
-#undef HOOK_PID
+    LOGI("Ctrl+Z pressed, tell kernel to UnHook socket");
+    tell_kernel_to_unhook();
+    uv_loop_t* loop = handle->data;
+    uv_signal_stop(handle);
+    uv_stop(loop);
+    exit(0);
+}
+
+void signal_handler_ctl_c(uv_signal_t *handle, int signum)
+{
+    LOGI("Ctrl+C pressed, tell kernel to UnHook socket");
+    tell_kernel_to_unhook();
     uv_loop_t* loop = handle->data;
     uv_signal_stop(handle);
     uv_stop(loop);
@@ -387,6 +448,7 @@ int main(int argc, char **argv) {
     int c, option_index = 0, daemon = 0;
     char* configfile = NULL;
     char* logfile_path = "/tmp/proximac.log";
+    RB_INIT(&pid_list);
     opterr = 0;
     static struct option long_options[] =
     {
@@ -428,6 +490,7 @@ int main(int argc, char **argv) {
     if (r)
         FATAL("unable to find process PID");
 
+//    exit(0);
     r = tell_kernel_to_hook();
     if (r)
         FATAL("kernel cannot hook this PID due to various reasons");
@@ -459,10 +522,13 @@ int main(int argc, char **argv) {
     LOGI("Listening on %s:%d", conf.proximac_listen_address, conf.proximac_port);
 
     signal(SIGPIPE, SIG_IGN);
-    uv_signal_t sigint;
+    uv_signal_t sigint,sigstp;
     sigint.data = loop;
+    sigstp.data = loop;
     int n = uv_signal_init(loop, &sigint);
-    n = uv_signal_start(&sigint, signal_handler, SIGINT);
+    n = uv_signal_init(loop, &sigstp);
+    n = uv_signal_start(&sigint, signal_handler_ctl_c, SIGINT);
+    n = uv_signal_start(&sigstp, signal_handler_ctl_z, SIGTSTP);
     
     uv_run(loop, UV_RUN_DEFAULT);
     uv_loop_close(loop);

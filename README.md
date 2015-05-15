@@ -22,9 +22,7 @@ Binary file in ```Contents/MacOS``` determines the process name.
 
 ##### New feature
 
-**
 Now support forcing multiple Apps to use SOCKS5 proxy.
-**
 
 
 

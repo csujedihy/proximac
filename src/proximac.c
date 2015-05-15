@@ -889,7 +889,6 @@ tl_attach_fn_locked(socket_t so, struct TCPLogEntry *tlp)
 	// important note: the pid associated with this socket is the pid of the process which created the 
 	// socket. The socket may have been passed to another process with a different pid.
 	tlp->tle_pid = proc_selfpid();
-    printf("roc_selfpid() %d\n", proc_selfpid());
 	// get the uid
 	tlp->tle_uid = kauth_getuid();
 	TAILQ_INSERT_TAIL(&tl_active, tlp, tle_link);
@@ -1248,7 +1247,7 @@ tl_notify_fn(void *cookie, socket_t so, sflt_event_t event, void *param)
                 lck_mtx_lock(gmutex_pid);
                 struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
                 lck_mtx_unlock(gmutex_pid);
-                printf("[proximac]: after RB_FIND pid = %d\n", find_pid.pid, pid_num);
+                printf("[proximac]: after RB_FIND pid = %d pid_num = %d\n", find_pid.pid, pid_num);
                 if (exist != NULL) {
                     printf("[proximac]: do hook operations to pid = %d\n", find_pid.pid);
                     mbuf_t proximac_hdr_data = NULL;
@@ -1789,7 +1788,7 @@ tl_connect_out_fn(void *cookie, socket_t so, const struct sockaddr *to)
         lck_mtx_lock(gmutex_pid);
         struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
         lck_mtx_unlock(gmutex_pid);
-        printf("[proximac]: after RB_FIND pid = %d pid_num \n", find_pid.pid, pid_num);
+        printf("[proximac]: after RB_FIND pid = %d pid_num %d\n", find_pid.pid, pid_num);
         if (exist != NULL) {
             printf("[proximac]: connect_out_fn found exist PID\n");
             remote_addr->sin_port = htons(8558);

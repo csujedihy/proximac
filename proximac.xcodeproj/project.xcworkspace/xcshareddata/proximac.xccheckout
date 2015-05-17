@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>B8E96CB9-EF14-44E8-AE41-A8EB1C6B4427</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</key>
+		<string>https://github.com/csujedihy/proximac</string>
+	</dict>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</key>
+		<string>proximac/</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/csujedihy/proximac</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8BD223DEF30FBE5E513BC5235F66567CE49ADFB9</string>
+			<key>IDESourceControlWCCName</key>
+			<string>proximac</string>
+		</dict>
+	</array>
+</dict>
+</plist>

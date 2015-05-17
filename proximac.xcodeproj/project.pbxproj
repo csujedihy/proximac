@@ -1,0 +1,422 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C13D4B481B086B13009F90A7 /* proximac.h in Headers */ = {isa = PBXBuildFile; fileRef = C13D4B471B086B13009F90A7 /* proximac.h */; };
+		C163FE841B09134800149D9A /* local.c in Sources */ = {isa = PBXBuildFile; fileRef = C163FE791B09134800149D9A /* local.c */; };
+		C163FE851B09134800149D9A /* jconf.c in Sources */ = {isa = PBXBuildFile; fileRef = C163FE7C1B09134800149D9A /* jconf.c */; };
+		C163FE861B09134800149D9A /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = C163FE7D1B09134800149D9A /* utils.c */; };
+		C163FE871B09134800149D9A /* tree.c in Sources */ = {isa = PBXBuildFile; fileRef = C163FE7E1B09134800149D9A /* tree.c */; };
+		C163FE881B09134800149D9A /* js0n.c in Sources */ = {isa = PBXBuildFile; fileRef = C163FE811B09134800149D9A /* js0n.c */; };
+		C163FE8A1B09137400149D9A /* libuv.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C163FE891B09137400149D9A /* libuv.1.dylib */; };
+		C17919201B0854380013F649 /* proximac.c in Sources */ = {isa = PBXBuildFile; fileRef = C179191F1B0854380013F649 /* proximac.c */; };
+		C17919271B0858480013F649 /* tree.h in Headers */ = {isa = PBXBuildFile; fileRef = C17919261B0858480013F649 /* tree.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C163FE431B0912C300149D9A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C13D4B471B086B13009F90A7 /* proximac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = proximac.h; sourceTree = "<group>"; };
+		C163FE451B0912C300149D9A /* proximac-cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "proximac-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C163FE791B09134800149D9A /* local.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = local.c; path = "proximac-cli/local.c"; sourceTree = SOURCE_ROOT; };
+		C163FE7A1B09134800149D9A /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "proximac-cli/utils.h"; sourceTree = SOURCE_ROOT; };
+		C163FE7B1B09134800149D9A /* local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = local.h; path = "proximac-cli/local.h"; sourceTree = SOURCE_ROOT; };
+		C163FE7C1B09134800149D9A /* jconf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jconf.c; path = "proximac-cli/jconf.c"; sourceTree = SOURCE_ROOT; };
+		C163FE7D1B09134800149D9A /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utils.c; path = "proximac-cli/utils.c"; sourceTree = SOURCE_ROOT; };
+		C163FE7E1B09134800149D9A /* tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tree.c; path = "proximac-cli/tree.c"; sourceTree = SOURCE_ROOT; };
+		C163FE7F1B09134800149D9A /* jconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jconf.h; path = "proximac-cli/jconf.h"; sourceTree = SOURCE_ROOT; };
+		C163FE801B09134800149D9A /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tree.h; path = "proximac-cli/tree.h"; sourceTree = SOURCE_ROOT; };
+		C163FE811B09134800149D9A /* js0n.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = js0n.c; path = "proximac-cli/js0n.c"; sourceTree = SOURCE_ROOT; };
+		C163FE821B09134800149D9A /* js0n.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = js0n.h; path = "proximac-cli/js0n.h"; sourceTree = SOURCE_ROOT; };
+		C163FE831B09134800149D9A /* socks5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socks5.h; path = "proximac-cli/socks5.h"; sourceTree = SOURCE_ROOT; };
+		C163FE891B09137400149D9A /* libuv.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libuv.1.dylib; path = ../../../../../../usr/local/lib/libuv.1.dylib; sourceTree = SOURCE_ROOT; };
+		C179191A1B0854380013F649 /* proximac.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = proximac.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		C179191E1B0854380013F649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C179191F1B0854380013F649 /* proximac.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = proximac.c; sourceTree = "<group>"; };
+		C17919261B0858480013F649 /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tree.h; path = proximac/tree.h; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C163FE421B0912C300149D9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C163FE8A1B09137400149D9A /* libuv.1.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C17919161B0854380013F649 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C163FE461B0912C300149D9A /* proximac-cli */ = {
+			isa = PBXGroup;
+			children = (
+				C163FE791B09134800149D9A /* local.c */,
+				C163FE7A1B09134800149D9A /* utils.h */,
+				C163FE7B1B09134800149D9A /* local.h */,
+				C163FE7C1B09134800149D9A /* jconf.c */,
+				C163FE7D1B09134800149D9A /* utils.c */,
+				C163FE7E1B09134800149D9A /* tree.c */,
+				C163FE7F1B09134800149D9A /* jconf.h */,
+				C163FE801B09134800149D9A /* tree.h */,
+				C163FE811B09134800149D9A /* js0n.c */,
+				C163FE821B09134800149D9A /* js0n.h */,
+				C163FE831B09134800149D9A /* socks5.h */,
+			);
+			path = "proximac-cli";
+			sourceTree = "<group>";
+		};
+		C17919101B0854380013F649 = {
+			isa = PBXGroup;
+			children = (
+				C163FE891B09137400149D9A /* libuv.1.dylib */,
+				C179191C1B0854380013F649 /* proximac */,
+				C163FE461B0912C300149D9A /* proximac-cli */,
+				C179191B1B0854380013F649 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C179191B1B0854380013F649 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C179191A1B0854380013F649 /* proximac.kext */,
+				C163FE451B0912C300149D9A /* proximac-cli */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C179191C1B0854380013F649 /* proximac */ = {
+			isa = PBXGroup;
+			children = (
+				C17919261B0858480013F649 /* tree.h */,
+				C13D4B471B086B13009F90A7 /* proximac.h */,
+				C179191F1B0854380013F649 /* proximac.c */,
+				C179191D1B0854380013F649 /* Supporting Files */,
+			);
+			path = proximac;
+			sourceTree = SOURCE_ROOT;
+		};
+		C179191D1B0854380013F649 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C179191E1B0854380013F649 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C17919171B0854380013F649 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C17919271B0858480013F649 /* tree.h in Headers */,
+				C13D4B481B086B13009F90A7 /* proximac.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		C163FE441B0912C300149D9A /* proximac-cli */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C163FE4B1B0912C300149D9A /* Build configuration list for PBXNativeTarget "proximac-cli" */;
+			buildPhases = (
+				C163FE411B0912C300149D9A /* Sources */,
+				C163FE421B0912C300149D9A /* Frameworks */,
+				C163FE431B0912C300149D9A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "proximac-cli";
+			productName = "proximac-cli";
+			productReference = C163FE451B0912C300149D9A /* proximac-cli */;
+			productType = "com.apple.product-type.tool";
+		};
+		C17919191B0854380013F649 /* proximac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C17919231B0854380013F649 /* Build configuration list for PBXNativeTarget "proximac" */;
+			buildPhases = (
+				C17919151B0854380013F649 /* Sources */,
+				C17919161B0854380013F649 /* Frameworks */,
+				C17919171B0854380013F649 /* Headers */,
+				C17919181B0854380013F649 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = proximac;
+			productName = proximac;
+			productReference = C179191A1B0854380013F649 /* proximac.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C17919111B0854380013F649 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = jedihy;
+				TargetAttributes = {
+					C163FE441B0912C300149D9A = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					C17919191B0854380013F649 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = C17919141B0854380013F649 /* Build configuration list for PBXProject "proximac" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C17919101B0854380013F649;
+			productRefGroup = C179191B1B0854380013F649 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C17919191B0854380013F649 /* proximac */,
+				C163FE441B0912C300149D9A /* proximac-cli */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C17919181B0854380013F649 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C163FE411B0912C300149D9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C163FE871B09134800149D9A /* tree.c in Sources */,
+				C163FE851B09134800149D9A /* jconf.c in Sources */,
+				C163FE881B09134800149D9A /* js0n.c in Sources */,
+				C163FE861B09134800149D9A /* utils.c in Sources */,
+				C163FE841B09134800149D9A /* local.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C17919151B0854380013F649 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C17919201B0854380013F649 /* proximac.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C163FE491B0912C300149D9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/local/include,
+					/usr/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Debug;
+		};
+		C163FE4A1B0912C300149D9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/local/include,
+					/usr/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Release;
+		};
+		C17919211B0854380013F649 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C17919221B0854380013F649 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C17919241B0854380013F649 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				INFOPLIST_FILE = proximac/Info.plist;
+				MODULE_NAME = com.csujedi.proximac;
+				MODULE_START = proximac_start;
+				MODULE_STOP = proximac_stop;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		C17919251B0854380013F649 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				INFOPLIST_FILE = proximac/Info.plist;
+				MODULE_NAME = com.csujedi.proximac;
+				MODULE_START = proximac_start;
+				MODULE_STOP = proximac_stop;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C163FE4B1B0912C300149D9A /* Build configuration list for PBXNativeTarget "proximac-cli" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C163FE491B0912C300149D9A /* Debug */,
+				C163FE4A1B0912C300149D9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		C17919141B0854380013F649 /* Build configuration list for PBXProject "proximac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C17919211B0854380013F649 /* Debug */,
+				C17919221B0854380013F649 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C17919231B0854380013F649 /* Build configuration list for PBXNativeTarget "proximac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C17919241B0854380013F649 /* Debug */,
+				C17919251B0854380013F649 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C17919111B0854380013F649 /* Project object */;
+}

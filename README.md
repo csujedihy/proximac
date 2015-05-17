@@ -5,26 +5,12 @@
 
 Proximac is an open-source alternative to Proxifier. With Proximac, users can force App to use SOCKS5 proxy. I hope more developers can join this project.
 
+Features:
+
+1. Support multi processes.
+2. White list (TODO).
+
 Note: Proximac only works on Mac OSX.
-
-##### Major change
-
-User now must specifiy exact process name. We abandon the old way to compare pid to determine whether the process should be hooked since pid is frequently changed due to program restart and will make proximac unable to find specified process.
-
-**process name under the new way**:
-
-```Unibox``` found from the path ```/Applications/Unibox.app/Contents/MacOS/Unibox```
-
-```Google Chrome``` found from the path ```/Applications/Google Chrome.app/Contents/MacOS/Google Chrome```
-
-Binary file in ```Contents/MacOS``` determines the process name.
-
-
-##### New feature
-
-Now support forcing multiple Apps to use SOCKS5 proxy.
-
-
 
 ####How to build
 NOTE: Proximac is based on libuv. So, before compile this project, make sure [libuv](https://github.com/libuv/libuv) was successfully installed:
@@ -35,22 +21,24 @@ NOTE: Proximac is based on libuv. So, before compile this project, make sure [li
 	$ ./configure
 	$ make install
 
-Then,
- 
-	$ git clone https://github.com/csujedihy/proximac.git
-	$ cd build
-	$ cmake ..
-	$ make
+Then, open Xcode project file and build it.
 
 ####Usage
 1. Build both kext and user-space program (proximac).
-2. Modify the config file to set your proxy info and the name of process to be hooked (See more details below).
+2. Modify the config file to set your proxy info and the names of processes to be hooked (See more details below).
 3. Run the following commands.
 
+**Or,** 
+
+1. Download Zip archive of binary files from [release page](https://github.com/csujedihy/proximac/releases).
+2. Extarct files.
+2. Run the following commands.
+
+
 ```
-  sudo chown -R root:wheel tcplognke.kext
-  sudo kextload tcplognke.kext
-  sudo ./proximac -c config.conf
+  sudo chown -R root:wheel proximac.kext
+  sudo kextload proximac.kext
+  sudo ./proximac-cli -c config.conf
 ```
 Detailed usage of proximac:
 
@@ -87,8 +75,9 @@ This software is partly based on projects below.
 1. [Shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev).
 2. [Shadowsocks-libuv](https://github.com/dndx/shadowsocks-libuv).
 3. [libuv](https://github.com/libuv/libuv).
-2. [js0n](https://github.com/quartzjer/js0n).
-3. tcplognke (Apple).
+4. [js0n](https://github.com/quartzjer/js0n).
+5. tcplognke (Apple).
+6. [drcom4mac](https://code.google.com/p/drcom4mac/) (As my kext dev guide book)
 
 ####Contact:
 csujedi at icloud dot com

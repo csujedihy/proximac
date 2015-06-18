@@ -8,6 +8,7 @@ Proximac is an open-source alternative to Proxifier. With Proximac, users can fo
 Features:
 
 1. Support multi processes.
+2. Support SOCKS5 authentication using username/password.
 2. White list (TODO).
 
 Note: Proximac only works on Mac OSX.
@@ -57,16 +58,16 @@ We use almost the same config file as shadowsocks do but add new arguments.
     "local_port":1080,
     "local_address":"127.0.0.1",
     "proximac_listen_address":"127.0.0.1",
-    "proximac_port":8558
+    "proximac_port":8558,
+    "username":"foo",
+    "password":"bar"
 }
 ```
 Note: 
 
 ```process_name``` are names of processes that you want to force to use SOCKS5 proxy, which can be found in ```Contents/MacOS``` folder inside those Apps (right click on Apps to get inside).
-
 ```local_address``` and ```local_port``` is the ip address and the listen port of your SOCKS5 proxy, respectively. 
-
-leave ```proximac_listen_address``` and ```proximac_port``` alone because these are hardcoded in kext source. 
+Leave ```proximac_listen_address``` and ```proximac_port``` alone because these are hardcoded in kext source unless you know what you are doing. ```username```and```password```are for SOCKS5 proxy required authentication. 
 
 
 ####References

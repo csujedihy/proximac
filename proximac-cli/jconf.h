@@ -20,6 +20,8 @@ typedef struct {
     char* local_address;
     char* proximac_listen_address;
     char* process_name;
+    char* username;
+    char* password;
     uint16_t proximac_port;
     int pid;
     int total_process_num;

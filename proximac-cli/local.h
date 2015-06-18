@@ -14,7 +14,7 @@
 #define RSV_LEN 1
 #define DATALEN_LEN 2
 #define ATYP_LEN 1
-#define ADDRLEN_LEN  1
+#define ADDRLEN_LEN 1
 #define PORT_LEN 2
 #define HDR_LEN (ID_LEN + RSV_LEN + DATALEN_LEN)
 #define EXP_TO_RECV_LEN (ID_LEN + RSV_LEN + DATALEN_LEN)
@@ -56,11 +56,12 @@ typedef struct {
 
 struct remote_ctx;
 
-typedef struct server_ctx{
+typedef struct server_ctx {
     uv_tcp_t server_handle;
     uv_tcp_t remote_handle;
     int server_stage;
     int remote_stage;
+    int remote_auth_stage;
     char remote_addr[256];
     char addrlen;
     uint16_t port;

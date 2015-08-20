@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <uv.h>
 #include <signal.h>
+
 extern FILE * logfile;
 
 #if __GNUC__ >= 3
@@ -47,102 +48,15 @@ extern FILE * logfile;
     assert(0);                                                      \
 } while(0)
 
-#ifdef XCODE_DEBUG
-#define LOGI(format, ...)                                   \
-do {                                                        \
-    time_t now = time(NULL);                                \
-    char timestr[20];                                       \
-    strftime(timestr, 20, TIME_FORMAT, localtime(&now));    \
-    fprintf(stderr, " %s INFO: " format "\n", timestr,      \
-    ## __VA_ARGS__);                                        \
-    fflush(stderr);                                         \
-}                                                           \
-while (0)
-#else
-#define LOGI(format, ...)                                   \
-do {                                                        \
-    time_t now = time(NULL);                                \
-    char timestr[20];                                       \
-    strftime(timestr, 20, TIME_FORMAT, localtime(&now));    \
-    fprintf(stderr, "\x1b[32m %s INFO: \e[0m" format "\n",  \
-            timestr,## __VA_ARGS__);                        \
-    fflush(stderr);                                         \
-}                                                           \
-while (0)
-#endif
 
-#ifdef XCODE_DEBUG
-#define LOGW(format, ...)                                   \
-do {                                                        \
-    time_t now = time(NULL);                                \
-    char timestr[20];                                       \
-    strftime(timestr, 20, TIME_FORMAT, localtime(&now));    \
-    fprintf(stderr, " %s WARN: " format "\n",               \
-    timestr,## __VA_ARGS__);                                \
-    fflush(stderr);                                         \
-}                                                           \
-while (0)
-#else
-#define LOGW(format, ...)                                       \
-do {                                                            \
-    time_t now = time(NULL);                                    \
-    char timestr[20];                                           \
-    strftime(timestr, 20, TIME_FORMAT, localtime(&now));        \
-    if (logfile != NULL) {                                      \
-        fprintf(logfile, " %s WARN: " format "\n", \
-                timestr,## __VA_ARGS__);                        \
-        fflush(logfile);                                        \
-    }                                                           \
-    else {                                                      \
-        fprintf(stderr, "\x1b[33m %s WARN: \e[0m" format "\n",  \
-                timestr,## __VA_ARGS__);                        \
-        fflush(stderr);                                         \
-    }                                                           \
-}                                                               \
-while (0)
-#endif
 
-#ifdef XCODE_DEBUG
-#define LOGD(format, ...)                                                       \
-do {                                                                            \
-            time_t now = time(NULL);                                            \
-            char timestr[20];                                                   \
-            strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
-            fprintf(stderr, " %s INFO: " format "\n", timestr,                  \
-            ## __VA_ARGS__);                                                    \
-            fflush(stderr);                                                     \
-    }                                                                           \
-while (0)
-#else
-#define LOGD(format, ...)                                                       \
-do {                                                                            \
-    if (logfile != NULL) {                                                  \
-        time_t now = time(NULL);                                            \
-        char timestr[20];                                                   \
-        strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
-        fprintf(logfile, " %s INFO: " format "\n", timestr,                 \
-        ## __VA_ARGS__);                                                    \
-        fflush(logfile);                                                    \
-    }                                                                       \
-    else {                                                                  \
-        time_t now = time(NULL);                                            \
-        char timestr[20];                                                   \
-        strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
-        fprintf(stderr, "\x1b[32m %s INFO: \e[0m" format "\n", timestr,     \
-        ## __VA_ARGS__);                                                    \
-        fflush(stderr);                                                     \
-    }                                                                       \
-}                                                                           \
-while (0)
-#endif
-
-#define FATAL(format, ...)                                                  \
+#define _LOG(color, tag, format, ...)  \
 do {                                                                        \
     if (logfile != NULL) {                                                  \
         time_t now = time(NULL);                                            \
         char timestr[20];                                                   \
         strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
-        fprintf(logfile, " %s FATAL: " format "\n", timestr,   \
+        fprintf(logfile, " %s " tag ": " format "\n", timestr,              \
         ## __VA_ARGS__);                                                    \
         fflush(logfile);                                                    \
     }                                                                       \
@@ -150,31 +64,28 @@ do {                                                                        \
         time_t now = time(NULL);                                            \
         char timestr[20];                                                   \
         strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
-        fprintf(stderr, "\x1b[31m %s FATAL: \e[0m" format "\n", timestr,    \
+        fprintf(stderr, color " %s " tag ": \e[0m" format "\n", timestr,    \
         ## __VA_ARGS__);                                                    \
         fflush(stderr);                                                     \
     }                                                                       \
-    exit(EXIT_FAILURE);                                                     \
 }                                                                           \
 while (0)
 
-#define LOGE(format, ...)                                                 \
-do {                                                                      \
-    time_t now = time(NULL);                                              \
-    char timestr[20];                                                     \
-    strftime(timestr, 20, TIME_FORMAT, localtime(&now));                  \
-    if (logfile != NULL) {                                                \
-        fprintf(logfile, " %s ERROR: " format "\n",          \
-        timestr,## __VA_ARGS__);                                          \
-        fflush(logfile);                                                  \
-    }                                                                     \
-    else {                                                                \
-        fprintf(stderr, "\x1b[31m %s ERROR: \e[0m" format "\n",           \
-        timestr,## __VA_ARGS__);                                          \
-        fflush(stderr);                                                   \
-    }                                                                     \
-}                                                                         \
+#define LOGI(format, ...)  \
+do {                                                                    \
+    time_t now = time(NULL);                                            \
+    char timestr[20];                                                   \
+    strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
+    fprintf(stderr, "\x1b[32m" " %s INFO: \e[0m" format "\n", timestr,       \
+    ## __VA_ARGS__);                                                    \
+    fflush(stderr);                                                     \
+}                                                                       \
 while (0)
+
+#define LOGD(format, ...)  _LOG("\x1b[32m", "Debug", format, ##__VA_ARGS__)
+#define LOGW(format, ...)  _LOG("\x1b[33m", "Warning", format, ##__VA_ARGS__)
+#define LOGE(format, ...)  _LOG("\x1b[31m", "Error", format, ##__VA_ARGS__)
+#define FATAL(format, ...) _LOG("\x1b[31m", "Fatal", format, ##__VA_ARGS__)
 
 #define SHOW_BUFFER(buf, len)   \
 do {                            \

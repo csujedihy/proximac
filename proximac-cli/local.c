@@ -118,8 +118,7 @@ static void remote_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
                     wr->req.data = server_ctx;
                     unsigned char username_len = strlen(conf.username);
                     unsigned char password_len = strlen(conf.password);
-                    int len = 1 /* fixed 1 byte */ + 2 /* two bytes indicate the length of username and password */ + username_len + password_len;
-                    int offset = 0;
+                    int len = 1 /* fixed 1 byte */ + 2 /* 2 bytes for username and password */ + username_len + password_len;
                     char* socks5req = malloc(len);
                     socks5req[0] = 0x01; /* version of auth */
                     socks5req[1] = username_len;
@@ -297,13 +296,12 @@ static void server_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
                 server_ctx->buf = tmpbuf;
             }
             else {
-                server_ctx->buf_len = NULL;
+                server_ctx->buf_len = 0;
                 server_ctx->buf = NULL;
             }
 
             free(buf->base);
 
-            LOGD("server_ctx %x addrlen = %d addr = %s port = %d", server_ctx, server_ctx->addrlen, server_ctx->remote_addr, server_ctx->port);
 
             struct sockaddr_in remote_addr;
             memset(&remote_addr, 0, sizeof(remote_addr));
@@ -353,11 +351,10 @@ int tell_kernel_to_hook()
     struct ctl_info ctl_info;
     struct sockaddr_ctl sc;
     errno_t retval = 0;
-    LOGI("tell kernel");
 
     gSocket = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
     if (gSocket < 0) {
-        LOGE("socket SYSPROTO_CONTROL");
+        LOGI("socket() failed.");
         exit(EXIT_FAILURE);
     }
 
@@ -377,15 +374,27 @@ int tell_kernel_to_hook()
     sc.sc_unit = 0;
 
     if (connect(gSocket, (struct sockaddr*)&sc, sizeof(struct sockaddr_ctl))) {
-        LOGE("connect");
+        LOGI("Connection to kernel failed. The kernel module may not be correctly loaded.");
         exit(EXIT_FAILURE);
     }
 
-    int tmp = 0;
-    retval = setsockopt(gSocket, SYSPROTO_CONTROL, PROXIMAC_ON, &tmp, sizeof(tmp));
+    
+    int vpn_mode = 0;
+    if (conf.vpn_mode == 1)
+        vpn_mode = 1;
+    
+    retval = setsockopt(gSocket, SYSPROTO_CONTROL, PROXIMAC_ON, &vpn_mode, sizeof(vpn_mode));
     if (retval) {
         LOGE("setsockopt failure PROXIMAC_ON");
         return retval;
+    }
+    
+    if (vpn_mode == 1) {
+        retval = setsockopt(gSocket, SYSPROTO_CONTROL, NOT_TO_HOOK, &conf.proxyapp_hash, sizeof(conf.proxyapp_hash));
+        if (retval) {
+            LOGE("setsockopt failure NOT_TO_HOOK");
+            return retval;
+        }
     }
 
     struct pid* pid_tmp = NULL;
@@ -422,7 +431,10 @@ int tell_kernel_to_hook()
         return retval;
     }
 
-    LOGI("pid_num = %d", pid_num);
+    if (conf.vpn_mode == 1)
+        LOGI("All traffic will be redirected to this SOCKS5 proxy");
+    else
+        LOGI("The total number of process that will be hooked = %d", pid_num);
 
     return retval;
 }
@@ -451,7 +463,7 @@ int main(int argc, char** argv)
 {
     int c, option_index = 0, daemon = 0;
     char* configfile = NULL;
-    char* logfile_path = "/tmp/proximac.log";
+    char* logfile_path = "./proximac.log";
     RB_INIT(&pid_list);
     opterr = 0;
     static struct option long_options[] = {
@@ -481,6 +493,10 @@ int main(int argc, char** argv)
         usage();
         exit(EXIT_FAILURE);
     }
+    
+    if (log_to_file) {
+        USE_LOGFILE(logfile_path);
+    }
 
     if (configfile) {
         read_conf(configfile, &conf);
@@ -497,8 +513,7 @@ int main(int argc, char** argv)
     if (daemon == 1)
         init_daemon();
 
-    if (log_to_file)
-        USE_LOGFILE(logfile_path);
+ 
 
     struct sockaddr_in bind_addr;
     loop = malloc(sizeof *loop);
@@ -508,16 +523,16 @@ int main(int argc, char** argv)
     uv_tcp_init(loop, &listener->handle);
     uv_tcp_nodelay(&listener->handle, 1);
 
-    r = uv_ip4_addr(conf.proximac_listen_address, conf.proximac_port, &bind_addr);
+    r = uv_ip4_addr("127.0.0.1", conf.proximac_port, &bind_addr);
     if (r)
-        LOGE("address error");
+        LOGE("Translate address error");
     r = uv_tcp_bind(&listener->handle, (struct sockaddr*)&bind_addr, 0);
     if (r)
-        LOGI("bind error");
+        LOGI("Bind error");
     r = uv_listen((uv_stream_t*)&listener->handle, 128 /*backlog*/, server_accept_cb);
     if (r)
-        LOGI("listen error port");
-    LOGI("Listening on %s:%d", conf.proximac_listen_address, conf.proximac_port);
+        LOGI("Listen error");
+    LOGI("Listening on %d", conf.proximac_port);
 
     signal(SIGPIPE, SIG_IGN);
     uv_signal_t sigint, sigstp, sigkil;

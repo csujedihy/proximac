@@ -35,6 +35,7 @@
 static kern_ctl_ref g_proximac_ctl_ref = NULL;
 static int g_pid_num = 0;
 static int g_proximac_mode = PROXIMAC_MODE_OFF;
+static int g_proxy_hash = 0;
 
 static bool g_proximac_tcp_filter_registered = false;
 static bool	g_proximac_tcp_unreg_started = false;
@@ -227,7 +228,7 @@ static struct kern_ctl_reg proximac_ctl_reg = {
     MYBUNDLEID,				/* use a reverse dns name which includes a name unique to your comany */
     0,						/* set to 0 for dynamically assigned control ID - CTL_FLAG_REG_ID_UNIT not set */
     0,						/* ctl_unit - ignored when CTL_FLAG_REG_ID_UNIT not set */
-    CTL_FLAG_PRIVILEGED,	/* privileged access required to access this filter */
+    0,                      /* privileged access required to access this filter */
     0,						/* use default send size buffer */
     0,						/* use default receive size buffer */
     proximac_ctl_connect_cb,	/* called when a connection request is accepted (requied field)*/
@@ -296,6 +297,7 @@ static errno_t proximac_ctl_connect_cb(
 #define HOOK_PID 2
 #define PIDLIST_STATUS 3
 #define PROXIMAC_OFF 4
+#define NOT_TO_HOOK 5
 
 static errno_t proximac_ctl_setopt_cb(
     kern_ctl_ref kctlref,
@@ -309,6 +311,7 @@ static errno_t proximac_ctl_setopt_cb(
     int intval;
     switch (opt) {
         case PROXIMAC_ON:
+        {
             lck_rw_lock_exclusive(g_pidlist_lock);
             if (g_pid_num != 0) {
                 
@@ -335,6 +338,8 @@ static errno_t proximac_ctl_setopt_cb(
             lck_rw_unlock_exclusive(g_pidlist_lock);
 
             lck_rw_lock_exclusive(g_mode_lock);
+            
+
             // install socket filters
             if (g_proximac_mode == PROXIMAC_MODE_OFF) {
                 retval = install_proximac_tcp_filter();
@@ -343,10 +348,16 @@ static errno_t proximac_ctl_setopt_cb(
                     lck_rw_unlock_exclusive(g_mode_lock);
                     return retval;
                 }
-                g_proximac_mode = PROXIMAC_MODE_ON;
+                intval = *(int *)data;
+                if(intval == 1){
+                    g_proximac_mode = PROXIMAC_MODE_ALL;
+                    LOGI("In VPN mode");
+                }
+                else
+                    g_proximac_mode = PROXIMAC_MODE_ON;
             }
             lck_rw_unlock_exclusive(g_mode_lock);
-
+        }
             break;
 //        case PROXIMAC_OFF:
 //            lck_rw_lock_exclusive(g_mode_lock);
@@ -357,11 +368,12 @@ static errno_t proximac_ctl_setopt_cb(
 //            return retval;
 //            break;
         case HOOK_PID:
+        {
             if (len < sizeof(int)) {
                 retval = EINVAL;
                 break;
             }
-            intval = *(int *)data;
+            intval = *(int*)data;
             lck_rw_lock_exclusive(g_pidlist_lock);
             struct pid *pid_to_insert = _MALLOC(sizeof(struct pid), M_TEMP, M_WAITOK| M_ZERO);
             pid_to_insert->pid = intval;
@@ -370,7 +382,22 @@ static errno_t proximac_ctl_setopt_cb(
             g_pid_num++;
             lck_rw_unlock_exclusive(g_pidlist_lock);
             break;
+        }
+        case NOT_TO_HOOK:
+        {
+            if (len < sizeof(int)) {
+                retval = EINVAL;
+                break;
+            }
             
+            intval = *(int*)data;
+            lck_rw_lock_exclusive(g_mode_lock);
+            g_proxy_hash = intval;
+            LOGI("proxy's hash has been set to %d", g_proxy_hash);
+            lck_rw_unlock_exclusive(g_mode_lock);
+            break;
+
+        }
         default:
             break;
     }
@@ -443,6 +470,8 @@ typedef struct proximac_cookie {
         struct sockaddr_in6	addr6;		/* ipv6 remote addr */
     } remote_addr;
     int protocol;       /* IPv4 or IPv6 */
+    int forward_flag;   /* Forward Flag */
+    int pid;
 } proximac_cookie_t;
 
 const static struct sflt_filter proximac_tcp_filter = {
@@ -495,6 +524,8 @@ proximac_tcp_connect_out_cb(
    const struct sockaddr * to)
 {
     proximac_cookie_t * proximac_cookie = (proximac_cookie_t *)cookie;
+    assert(cookie);
+
     lck_rw_lock_shared(g_mode_lock);
     if (g_proximac_mode == PROXIMAC_MODE_OFF)
     {
@@ -503,30 +534,53 @@ proximac_tcp_connect_out_cb(
     }
     lck_rw_unlock_shared(g_mode_lock);
     
-    assert(cookie);
-
-    
     // Make sure address family is correct
     assert(to->sa_family == AF_INET);
     assert(sizeof(struct sockaddr_in) <= to->sa_len);
-    assert((to->sa_family == AF_INET) || (to->sa_family == AF_INET6));	/*verify that the address is AF_INET/AF_INET6 */
-
+    assert((to->sa_family == AF_INET) || (to->sa_family == AF_INET6)); /* verify that the address is AF_INET/AF_INET6 */
     assert (sizeof(proximac_cookie->remote_addr.addr4) >= to->sa_len); /* verify that there is enough room to store data */
+
     /* save the remote address in the tli_remote field */
     bcopy(to, &(proximac_cookie->remote_addr.addr4), to->sa_len);
     struct sockaddr_in *remote_addr;
     remote_addr = (struct sockaddr_in*)to;
     proximac_cookie->remote_addr.addr4.sin_port = ntohs(proximac_cookie->remote_addr.addr4.sin_port);
+
+    /* see if this is a local stream, then we just ignore */
+    int local_tcp_flag = 0;
+    if (remote_addr->sin_addr.s_addr == LOCALHOST)
+        return 0;
+    
+    /* do not forward any traffic from proximac-cli or SOCKS5 proxy. Otherwise, traffic will be trapped in a loop */
+    if (proximac_cookie->pid == 0 || proximac_cookie->pidhash_value == pid_hash(MYAPPNAME) || proximac_cookie->pidhash_value == g_proxy_hash) {
+        LOGI("Traffic from this process is not allowed to be forwarded. PID = %d", proximac_cookie->pid);
+        return 0;
+    }
+    
+    /* see if we're in forward all mode which is like VPN */
+    if (g_proximac_mode == PROXIMAC_MODE_ALL) {
+        if (proximac_cookie->pid != 0 && local_tcp_flag == 0) {
+            proximac_cookie->forward_flag = 1;
+            LOGI("A process is now hooked");
+            remote_addr->sin_port = htons(8558);
+            remote_addr->sin_addr.s_addr = LOCALHOST;
+            LOGI("forward flag has been set to 1");
+        }
+        return 0;
+    }
+    
     struct pid find_pid;
     find_pid.pid = proximac_cookie->pidhash_value;
     lck_rw_lock_exclusive(g_pidlist_lock);
     struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
     LOGI("after RB_FIND pid = %d pid_num %d\n", find_pid.pid, g_pid_num);
     lck_rw_unlock_exclusive(g_pidlist_lock);
+    
     if (exist != NULL) {
-        LOGI("found existed PID\n");
+        proximac_cookie->forward_flag = 1;
+        LOGI("A process is now hooked");
         remote_addr->sin_port = htons(8558);
-        remote_addr->sin_addr.s_addr = 0x100007f;
+        remote_addr->sin_addr.s_addr = LOCALHOST;
     }
     
     return 0;
@@ -553,10 +607,13 @@ proximac_tcp_attach_cb(void ** cookie, socket_t so)
     }
     
     proximac_cookie_t * proximac_cookie = (proximac_cookie_t *)(*cookie);
+    proximac_cookie->forward_flag = 0;
+    
     char proc_name[64] = {0};
     proc_selfname(proc_name, 63);
+    proximac_cookie->pid = proc_selfpid();
     proximac_cookie->pidhash_value = pid_hash(proc_name);
-    LOGI("pid hash value = %d\n", proximac_cookie->pidhash_value);
+    LOGI("pid hash value = %d proc_name = %s\n", proximac_cookie->pidhash_value, proc_name);
     LOGI("Proximac TCP filter has been attached to a socket");
     return 0;
 }
@@ -575,14 +632,9 @@ proximac_tcp_notify_cb(void *cookie, socket_t so, sflt_event_t event, void *para
             inet_ntop(AF_INET, remoteAddr, (char*)addrString, sizeof(addrString));
 
             // added prepend proximac_hdr for proximac
-            struct pid find_pid;
-            find_pid.pid = proximac_cookie->pidhash_value;
-            lck_rw_lock_exclusive(g_pidlist_lock);
-            struct pid *exist = RB_FIND(pid_tree, &pid_list, &find_pid);
-            LOGI("notify_cb -- after RB_FIND pid = %d pid_num = %d\n", find_pid.pid, g_pid_num);
-            lck_rw_unlock_exclusive(g_pidlist_lock);
-            if (exist != NULL) {
-                LOGI("notify_cb -- do hook operations to pid = %d\n", find_pid.pid);
+            
+            if (proximac_cookie->forward_flag == 1) {
+                LOGI("notify_cb -- do hook operations to pid");
                 mbuf_t proximac_hdr_data = NULL;
                 mbuf_t proximac_hdr_control = NULL;
                 errno_t retval;

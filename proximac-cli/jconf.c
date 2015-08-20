@@ -18,7 +18,10 @@ void read_conf(char* configfile, conf_t* conf)
     char* configbuf = NULL;
     char localport_buf[6] = { 0 };
     char proximac_port_buf[6] = { 0 };
+    char vpn_mode_buf[6] = { 0 };
     int vlen = 0;
+    
+    /* need to reset these bufs to zero */
 
     FILE* f = fopen(configfile, "rb");
     if (f == NULL) {
@@ -60,17 +63,10 @@ void read_conf(char* configfile, conf_t* conf)
             pid_to_insert->name[vlen] = '\0';
             pid_to_insert->pid = hash(pid_to_insert->name);
             RB_INSERT(pid_tree, &pid_list, pid_to_insert);
-            LOGI("%d. %s hash %x", index, pid_to_insert->name, pid_to_insert->pid);
+            LOGI("%d. %s hash %d", index, pid_to_insert->name, pid_to_insert->pid);
         }
 
         conf->total_process_num = index;
-    }
-
-    JSONPARSE("proximac_listen_address")
-    {
-        conf->proximac_listen_address = (char*)malloc(vlen + 1);
-        memcpy(conf->proximac_listen_address, val, vlen);
-        conf->proximac_listen_address[vlen] = '\0';
     }
 
     JSONPARSE("proximac_port")
@@ -78,7 +74,27 @@ void read_conf(char* configfile, conf_t* conf)
         memcpy(proximac_port_buf, val, vlen);
         conf->proximac_port = atoi(proximac_port_buf);
     }
+    
+    JSONPARSE("VPN_mode")
+    {
+        memcpy(vpn_mode_buf, val, vlen);
+        conf->vpn_mode = atoi(vpn_mode_buf);
+    }
 
+    JSONPARSE("proxyapp_name")
+    {
+        struct pid* proxyapp_hash = malloc(sizeof(struct pid));
+        proxyapp_hash->name = calloc(1, vlen + 1);
+        memcpy(proxyapp_hash->name, val, vlen);
+        proxyapp_hash->name[vlen] = '\0';
+        proxyapp_hash->pid = hash(proxyapp_hash->name);
+        LOGI("Proxy App name is %s", proxyapp_hash->name);
+        LOGD("Proxy App name is %s, hash %d", proxyapp_hash->name, proxyapp_hash->pid);
+
+        conf->proxyapp_hash = proxyapp_hash->pid;
+        free(proxyapp_hash);
+    }
+    
     JSONPARSE("local_port")
     {
         memcpy(localport_buf, val, vlen);

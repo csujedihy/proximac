@@ -25,6 +25,8 @@ typedef struct {
     uint16_t proximac_port;
     int pid;
     int total_process_num;
+    int vpn_mode;
+    int proxyapp_hash;
 } conf_t;
 
 extern void read_conf(char* configfile, conf_t* conf);

@@ -7,6 +7,8 @@
 #define CTL_INIT 0x01
 #define CTL_NORMAL 0
 
+#define LOCALHOST "127.0.0.1"
+
 // packet related MACROs
 #define MAX_PKT_SIZE 8192
 #define ID_LEN 4
@@ -30,6 +32,7 @@
 #define HOOK_PID 2
 #define PIDLIST_STATUS 3
 #define PROXIMAC_OFF 4
+#define NOT_TO_HOOK 5
 
 #include "tree.h"
 

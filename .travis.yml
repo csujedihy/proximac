@@ -1,7 +1,0 @@
-language: c
-os:
-  - osx
-compiler:
-  - gcc
-  - clang
-script: git clone https://github.com/libuv/libuv&&cd libuv&&sh autogen.sh&&./configure&&make&&sudo make install&&cd ../build/&&cmake ..&&make

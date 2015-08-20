@@ -441,7 +441,7 @@ int tell_kernel_to_hook()
 
 void signal_handler_ctl_z(uv_signal_t* handle, int signum)
 {
-    LOGI("Ctrl+Z pressed, tell kernel to UnHook socket");
+    LOGI("Terminal signal captured! Exiting and turning off kernel extension...");
     tell_kernel_to_unhook();
     uv_loop_t* loop = handle->data;
     uv_signal_stop(handle);
@@ -535,16 +535,19 @@ int main(int argc, char** argv)
     LOGI("Listening on %d", conf.proximac_port);
 
     signal(SIGPIPE, SIG_IGN);
-    uv_signal_t sigint, sigstp, sigkil;
+    uv_signal_t sigint, sigstp, sigkil, sigterm;
     sigkil.data = loop;
     sigint.data = loop;
     sigstp.data = loop;
+    sigterm.data = loop;
     uv_signal_init(loop, &sigint);
     uv_signal_init(loop, &sigstp);
     uv_signal_init(loop, &sigkil);
+    uv_signal_init(loop, &sigterm);
     uv_signal_start(&sigint, signal_handler_ctl_z, SIGKILL);
     uv_signal_start(&sigint, signal_handler_ctl_c, SIGINT);
     uv_signal_start(&sigstp, signal_handler_ctl_z, SIGTSTP);
+    uv_signal_start(&sigterm, signal_handler_ctl_z, SIGTERM);
 
     uv_run(loop, UV_RUN_DEFAULT);
     uv_loop_close(loop);

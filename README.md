@@ -1,5 +1,4 @@
-## Proximac
-
+![image](https://raw.githubusercontent.com/csujedihy/proximac/master/img/proximac-logo.png)
 
 #### Overview
 

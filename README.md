@@ -13,11 +13,12 @@ Features:
 Note: Proximac only works on Mac OSX.
 
 #### Usage 
-1. Install libuv first. Run ```brew install libuv``` or whatever.
+1. If you plan to use Proximac on OSX 10.10+, please run ```sudo nvram boot-args="debug=0x146 kext-dev-mode=1"```. (Sorry, I do not have enough money to buy a developer membership to sign the kext)
+1. Install libuv first. Run ```brew install libuv``` or whatever
 2. Run ```curl -fsSL https://raw.githubusercontent.com/proximac-org/proximac-install/master/install.py |python ```
-3. Set up your config file which indicates Proximac's work mode (VPN or per-App) and proxy configuration.
-4. Run ```proximac start [path of your config file]``` to start Proximac.
-5. Run ```proximac stop``` to stop Proximac.
+3. Set up your config file which indicates Proximac's work mode (VPN or per-App) and proxy configuration
+4. Run ```proximac start [path of your config file]``` to start Proximac
+5. Run ```proximac stop``` to stop Proximac
 
 #### How to build from source
 NOTE: Proximac is based on libuv. So, before compile this project, make sure [libuv](https://github.com/libuv/libuv) was successfully installed:

@@ -4,7 +4,7 @@
 
 Proximac is an command-line open-source alternative to Proxifier. With Proximac, it can force App to use SOCKS5 proxy. In the other words, it can forward any App's traffic to a certain SOCKS5 proxy. Moreover, Proximac now can forward all network traffic in your system to a proxy which means you may not need a VPN to do this job. I hope more developers can join this project.
 
-###### :blush: Welcome to contribute code to this project! 
+###### :blush: Welcome to contribute code to this project! If you have any idea, feel free to contact me!
 
 Website: [http://proximac.org](http://proximac.org)
 

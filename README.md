@@ -15,7 +15,7 @@ Features:
 
 Note: Proximac only works on Mac OSX.
 
-#### Usage 
+#### Usage
 1. If you plan to use Proximac on OSX 10.10+, please run ```sudo nvram boot-args="debug=0x146 kext-dev-mode=1"```.  For 10.11, do Restart -> Press COMMAND + R -> Recovery Mode -> Terminal -> csrutil enable --without kext --without debug.
 
 1. Install libuv first. Run ```brew install libuv``` or whatever works
@@ -43,7 +43,7 @@ We use almost the same config file as shadowsocks do but add new arguments. (**N
 ```
 {
     "process_name":
-    ["Unibox", "Google Chrome", "Thunder"], 
+    ["Unibox", "Google Chrome", "Thunder"],
     "local_port":1080,
     "local_address":"127.0.0.1",
     "proximac_port":8558,
@@ -51,11 +51,11 @@ We use almost the same config file as shadowsocks do but add new arguments. (**N
     "password":"bar"
 }
 ```
-Note: 
+Note:
 
 ***process_name*** are names of processes that you want to force to use SOCKS5 proxy, which can be found in ***Contents/MacOS*** folder inside those Apps (right click on Apps to get inside).
 
-***local_address*** and ***local_port*** is the ip address and the listen port of your SOCKS5 proxy, respectively. 
+***local_address*** and ***local_port*** is the ip address and the listen port of your SOCKS5 proxy, respectively.
 
 Leave ***proximac_port*** alone because this is now hardcoded in kext source. ***username*** and ***password*** are for SOCKS5 proxy required authentication if needed. If your SOCKS5 proxy does not require authentification, just remove these two lines.
 
@@ -70,18 +70,18 @@ There is another example (**VPN mode**)
     "proxyapp_name":"ShadowsocksX"
 }
 ```
-Set ***VPN_mode*** to 1 to enable VPN mode. 
+Set ***VPN_mode*** to 1 to enable VPN mode.
 Set ***proxyapp_name*** to your proxy's process name in case network traffic are trapped in a loop or we can call it a white-list but now Proximac only supports one proxy.
 
 #### References
 This software is partly based on projects below.
 
-1. [Shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev).
-2. [Shadowsocks-libuv](https://github.com/dndx/shadowsocks-libuv).
-3. [libuv](https://github.com/libuv/libuv).
-4. [js0n](https://github.com/quartzjer/js0n).
-5. tcplognke (Apple).
-6. [drcom4mac](https://code.google.com/p/drcom4mac/) (As my kext dev guide book)
+1. [Shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev): libev port of shadowsocks.
+2. [Shadowsocks-libuv](https://github.com/dndx/shadowsocks-libuv): A Lightweight and Super Fast Server for shadowsocks.
+3. [libuv](https://github.com/libuv/libuv): Cross-platform asynchronous I/O.
+4. [js0n](https://github.com/quartzjer/js0n): Flexible Zero-Footprint JSON Parser in C.
+5. [tcplognke](https://developer.apple.com/legacy/library/samplecode/tcplognke/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003669): The tcplognke demonstrates the implementation of a network socket filter for processing incoming and outgoing http packets using the new Kernel Programming Interfaces.
+6. [drcom4mac](https://code.google.com/p/drcom4mac/): As my kext dev guide book by csujedihy.
 
 #### Copyright:
 This project is under GPL v3.0.

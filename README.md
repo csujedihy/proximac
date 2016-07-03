@@ -81,7 +81,7 @@ This software is partly based on projects below.
 3. [libuv](https://github.com/libuv/libuv): Cross-platform asynchronous I/O.
 4. [js0n](https://github.com/quartzjer/js0n): Flexible Zero-Footprint JSON Parser in C.
 5. [tcplognke](https://developer.apple.com/legacy/library/samplecode/tcplognke/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003669): The tcplognke demonstrates the implementation of a network socket filter for processing incoming and outgoing http packets using the new Kernel Programming Interfaces.
-6. [drcom4mac](https://code.google.com/p/drcom4mac/): As my kext dev guide book by csujedihy.
+6. [drcom4mac](https://code.google.com/p/drcom4mac/): As my kext dev guide book.
 
 #### Copyright:
 This project is under GPL v3.0.

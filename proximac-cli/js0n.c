@@ -1,5 +1,5 @@
 // by jeremie miller - 2014
-// public domain, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
+// public domain or MIT license, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
 
 #include <string.h> // one strncmp() is used to do key comparison, and a strlen(key) if no len passed in
 
@@ -16,14 +16,15 @@
 #define PUSH(i) if(depth == 1) { if(!index) { val = cur+i; }else{ if(klen && index == 1) start = cur+i; else index--; } }
 
 // determine if key matches or value is complete
-#define CAP(i) if(depth == 1) { if(val && !index) {*vlen = (cur+i+1) - val; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 0 : 1;}
+#define CAP(i) if(depth == 1) { if(val && !index) {*vlen = (size_t)((cur+i+1) - val); return val;}; if(klen && start) {index = (klen == (size_t)(cur-start) && strncmp(key,start,klen)==0) ? 0 : 2; start = 0;} }
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
+const char *js0n(const char *key, size_t klen,
+				 const char *json, size_t jlen, size_t *vlen)
 {
-	char *val = 0;
-	char *cur, *end, *start;
-	int index = 1;
+	const char *val = 0;
+	const char *cur, *end, *start;
+	size_t index = 1;
 	int depth = 0;
 	int utf8_remain = 0;
 	static void *gostruct[] = 
@@ -43,7 +44,7 @@ char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
 		[0 ... 31] = &&l_bad,
 		[32 ... 126] = &&l_loop, // could be more pedantic/validation-checking
 		['\t'] = &&l_unbare, [' '] = &&l_unbare, ['\r'] = &&l_unbare, ['\n'] = &&l_unbare,
-		[','] = &&l_unbare, [']'] = &&l_unbare, ['}'] = &&l_unbare,
+		[','] = &&l_unbare, [']'] = &&l_unbare, ['}'] = &&l_unbare, [':'] = &&l_unbare,
 		[127 ... 255] = &&l_bad
 	};
 	static void *gostring[] = 
@@ -77,7 +78,6 @@ char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
 	// no key is array mode, klen provides requested index
 	if(!key)
 	{
-		if(klen < 0) return 0;
 		index = klen;
 		klen = 0;
 	}else{

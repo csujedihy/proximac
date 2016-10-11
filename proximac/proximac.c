@@ -414,18 +414,16 @@ static errno_t proximac_ctl_getopt_cb(
     size_t *len)
 {
     errno_t retval = 0;
-    size_t  valsize;
+    size_t  valsize = lmin(sizeof(int), *len);;
     void    *buf;
     switch (opt) {
         case PIDLIST_STATUS:
-            valsize = min(sizeof(int), *len);
             lck_rw_lock_exclusive(g_pidlist_lock);
             LOGI("pid number = %d\n", g_pid_num);
             buf = &g_pid_num;
             lck_rw_unlock_exclusive(g_pidlist_lock);
             break;
         case HOOK_PID:
-            valsize = min(sizeof(int), *len);
             lck_rw_lock_exclusive(g_pidlist_lock);
             struct pid *pid_tmp = NULL;
             int pidget_checksum = 0;
@@ -439,7 +437,6 @@ static errno_t proximac_ctl_getopt_cb(
         case PROXIMAC_OFF:
         {
             int result = 0;
-            valsize = min(sizeof(int), *len);
             lck_rw_lock_exclusive(g_mode_lock);
             g_proximac_mode = PROXIMAC_MODE_OFF;
             lck_rw_unlock_exclusive(g_mode_lock);
@@ -629,7 +626,7 @@ proximac_tcp_notify_cb(void *cookie, socket_t so, sflt_event_t event, void *para
             in_port_t		port;
             remoteAddr = &(proximac_cookie->remote_addr.addr4.sin_addr);
             port = proximac_cookie->remote_addr.addr4.sin_port;
-            inet_ntop(AF_INET, remoteAddr, (char*)addrString, sizeof(addrString));
+            inet_ntop(AF_INET, remoteAddr, (char*) addrString, sizeof(addrString));
 
             // added prepend proximac_hdr for proximac
             
@@ -639,7 +636,7 @@ proximac_tcp_notify_cb(void *cookie, socket_t so, sflt_event_t event, void *para
                 mbuf_t proximac_hdr_control = NULL;
                 errno_t retval;
                 
-                char addrlen = strlen(addrString);
+                char addrlen = strlen((char*) addrString);
                 LOGI("getsockopt addrString %s\n", addrString);
                 int hdr_len = 1 + addrlen + sizeof(port);
                 

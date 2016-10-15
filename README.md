@@ -19,7 +19,7 @@ Note: Proximac only works on Mac OSX.
 1. If you plan to use Proximac on OSX 10.10+, please run ```sudo nvram boot-args="debug=0x146 kext-dev-mode=1"```.  For 10.11, do Restart -> Press COMMAND + R -> Recovery Mode -> Terminal -> csrutil enable --without kext --without debug.
 
 1. Install libuv first. Run ```brew install libuv``` or whatever works
-2. Run ```curl -fsSL https://raw.githubusercontent.com/proximac-org/proximac-install/master/install.py |python ```
+2. Run ```curl -fsSL https://raw.githubusercontent.com/proximac-org/proximac-install/master/install.py |sudo python ```
 3. Set up your config file which indicates Proximac's work mode (VPN or per-App) and proxy configuration
 4. Run ```proximac start -c [path of your config file]``` to start Proximac
 5. Run ```proximac stop``` to stop Proximac

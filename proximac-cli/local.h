@@ -1,7 +1,6 @@
 #ifndef LOCAL_H_
 #define LOCAL_H_
 
-#define INT_MAX 2147483647
 #define BUF_SIZE 2048
 #define CTL_CLOSE 0x04
 #define CTL_INIT 0x01
@@ -69,7 +68,7 @@ typedef struct server_ctx {
     char addrlen;
     uint16_t port;
     char* buf;
-    int buf_len;
+    size_t buf_len;
     struct remote_ctx* remote_ctx;
 } server_ctx_t;
 

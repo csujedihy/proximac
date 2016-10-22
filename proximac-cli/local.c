@@ -30,7 +30,7 @@
 conf_t conf;
 FILE* logfile = NULL;
 uv_loop_t* loop = NULL;
-int log_to_file = 1;
+int log_to_file = 0;
 int gSocket = -1;
 int gSocket_for_release = -1;
 
@@ -248,7 +248,7 @@ static void server_accept_cb(uv_stream_t* server, int status)
     uv_tcp_init(loop, &server_ctx->server_handle);
     uv_tcp_init(loop, &server_ctx->remote_handle);
     uv_tcp_nodelay(&server_ctx->server_handle, 1);
-    LOGW("server_accept_cb %x %d", server_ctx, server_ctx->remote_handle.type);
+    LOGW("server_accept_cb %s %d", server_ctx->remote_addr, server_ctx->remote_handle.type);
     int r = uv_accept(server, (uv_stream_t*)&server_ctx->server_handle);
     if (r) {
         fprintf(stderr, "accepting connection failed %d", r);
@@ -287,7 +287,7 @@ static void server_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
             server_ctx->addrlen = server_ctx->buf[0];
             memcpy(server_ctx->remote_addr, server_ctx->buf + sizeof(char), server_ctx->addrlen);
             memcpy(&server_ctx->port, server_ctx->buf + 1 + server_ctx->addrlen, sizeof(server_ctx->port));
-            int tmpbuf_len = nread - server_ctx->addrlen - 1 - sizeof(server_ctx->port);
+            unsigned long tmpbuf_len = nread - server_ctx->addrlen - 1 - sizeof(server_ctx->port);
             if (tmpbuf_len) {
                 char* tmpbuf = malloc(tmpbuf_len);
                 memcpy(tmpbuf, server_ctx->buf + server_ctx->addrlen + 1 + sizeof(server_ctx->port), tmpbuf_len);
@@ -305,7 +305,7 @@ static void server_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
 
             struct sockaddr_in remote_addr;
             memset(&remote_addr, 0, sizeof(remote_addr));
-            int r = uv_ip4_addr(conf.local_address, conf.localport, &remote_addr);
+            uv_ip4_addr(conf.local_address, conf.localport, &remote_addr);
 
             uv_connect_t* remote_conn_req = calloc(1, sizeof(uv_connect_t));
             remote_conn_req->data = server_ctx;
@@ -322,13 +322,10 @@ static void server_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
 
 int tell_kernel_to_unhook()
 {
-    struct ctl_info ctl_info;
-    struct sockaddr_ctl sc;
     errno_t retval = 0;
-    int tmp = 0;
 
     int result = 0;
-    int size = sizeof(result);
+    unsigned int size = sizeof(result);
     retval = getsockopt(gSocket, SYSPROTO_CONTROL, PROXIMAC_OFF, &result, &size);
     if (-1 == retval) {
         LOGI("getsockopt failure PROXIMAC_OFF");
@@ -410,7 +407,7 @@ int tell_kernel_to_hook()
     }
 
     int pidget_checksum = 0;
-    int size = sizeof(pidget_checksum);
+    unsigned int size = sizeof(pidget_checksum);
     retval = getsockopt(gSocket, SYSPROTO_CONTROL, HOOK_PID, &pidget_checksum, &size);
     if (retval) {
         LOGE("getsockopt HOOK_PID failure");

@@ -14,12 +14,12 @@
 
 void read_conf(char* configfile, conf_t* conf)
 {
-    char* val = NULL;
+    const char* val = NULL;
     char* configbuf = NULL;
     char localport_buf[6] = { 0 };
     char proximac_port_buf[6] = { 0 };
     char vpn_mode_buf[6] = { 0 };
-    int vlen = 0;
+    size_t vlen = 0;
     
     /* need to reset these bufs to zero */
 
@@ -37,7 +37,7 @@ void read_conf(char* configfile, conf_t* conf)
         FATAL("No enough memory.");
     }
 
-    int nread = fread(configbuf, pos, 1, f);
+    size_t nread = fread(configbuf, pos, 1, f);
     if (!nread) {
         FATAL("Failed to read the config file.");
     }
@@ -52,7 +52,7 @@ void read_conf(char* configfile, conf_t* conf)
     JSONPARSE("process_name")
     {
         int index = 0;
-        char* buf;
+        const char* buf;
         LOGI("Process List:");
         while ((buf = js0n(NULL, index, val, (int)pos, &vlen)) != NULL) {
             index++;

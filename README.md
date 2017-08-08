@@ -1,6 +1,6 @@
-#### I am re-writing a GUI based Proximac using my own network framework. Come and check out my socket framework.
+> I am re-writing a GUI based Proximac using my own network framework. Come and check out my socket framework.
 
-[https://github.com/csujedihy/SwiftDSSocket](https://github.com/csujedihy/SwiftDSSocket)
+> [https://github.com/csujedihy/SwiftDSSocket](https://github.com/csujedihy/SwiftDSSocket)
 
 ![image](https://raw.githubusercontent.com/csujedihy/proximac/master/img/proximac-logo.png)
 

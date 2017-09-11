@@ -10,7 +10,7 @@ Proximac is an command-line open-source alternative to Proxifier. With Proximac,
 
 ###### :blush: Welcome to contribute code to this project! If you have any idea, feel free to contact me!
 
-Website: [http://proximac.org](http://proximac.org)
+Website: [http://proximac.io](http://proximac.io)
 
 Features:
 

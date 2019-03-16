@@ -43,7 +43,6 @@ static void remote_alloc_cb(uv_handle_t* handle, size_t size, uv_buf_t* buf);
 static void remote_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf);
 static void remote_write_cb(uv_write_t* req, int status);
 static void server_after_close_cb(uv_handle_t* handle);
-static void connect_to_remote_cb(uv_connect_t* req, int status);
 static void server_accept_cb(uv_stream_t* server, int status);
 static void remote_after_close_cb(uv_handle_t* handle);
 static void connect_to_remote_cb(uv_connect_t* req, int status);
@@ -112,7 +111,7 @@ static void remote_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
                     goto neg_ok;
                 }
                 else if (buf->base[0] == 0x05 && buf->base[1] == 0x02) {
-                    LOGD("socks5 server response 05 01 auth is required (OK)");
+                    LOGD("socks5 server response 05 02 auth is required (OK)");
                     // now send auth. info to SOCKS5 proxy
                     write_req_t* wr = (write_req_t*)malloc(sizeof(write_req_t));
                     wr->req.data = server_ctx;
@@ -229,7 +228,10 @@ static void connect_to_remote_cb(uv_connect_t* req, int status)
     char* socks5req = malloc(3);
     socks5req[0] = 0x05;
     socks5req[1] = 0x01;
-    socks5req[2] = 0x00;
+    if (conf.username == NULL || conf.password == NULL)
+        socks5req[2] = 0x00;
+    else
+        socks5req[2] = 0x02;
     wr->buf = uv_buf_init(socks5req, 3);
     uv_write(&wr->req, (uv_stream_t*)&server_ctx->remote_handle, &wr->buf, 1, remote_write_cb);
 }

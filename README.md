@@ -6,8 +6,6 @@ Proximac is an command-line open-source alternative to Proxifier. With Proximac,
 
 ###### :blush: Welcome to contribute code to this project! If you have any idea, feel free to contact me!
 
-Website: [http://proximac.app](http://proximac.app)
-
 Features:
 
 1. Support global traffic forwarding (VPN mode).
